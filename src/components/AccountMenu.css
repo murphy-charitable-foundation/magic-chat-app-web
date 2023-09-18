@@ -1,0 +1,16 @@
+a {
+  text-decoration: none;
+}
+a:hover {
+  display: block;
+  background-color: inherit;
+}
+
+.MuiTypography-root a {
+  color: azure;
+}
+.MuiTypography-root a:hover {
+  background-color: inherit;
+  display: block;
+  opacity: 0.8;
+}
