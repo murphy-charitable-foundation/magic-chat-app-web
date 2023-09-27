@@ -1,4 +1,4 @@
-import { Avatar, Box, Stack, TextField, Typography } from "@mui/material";
+import { Box, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import MessageBoard from "../components/MessageBoard";
 
