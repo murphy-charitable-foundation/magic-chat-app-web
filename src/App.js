@@ -13,6 +13,7 @@ import Layout from "./components/Layout.jsx";
 import ChangePassword from "./pages/ChangePassword";
 import GuestLayout from "./components/LayoutGuest.jsx";
 import Messages from "./pages/Messages";
+import Message from "./pages/Message";
 import AccountSetting from "./pages/AccountSetting";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
           <Route path="/messages" element={<Messages />} />
+          <Route path="/messages/:id" element={<Message />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/account-setting" element={<AccountSetting />} />
         </Route>

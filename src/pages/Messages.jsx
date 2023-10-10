@@ -8,12 +8,14 @@ const chatsRes = [
     imgSrc: "./images/festus.jpg",
     lastMessage: "Hey, How are you?",
     timestamp: "12:01",
+    senderId: 1,
   },
   {
     name: "Charlie",
     imgSrc: "./images/example-1.jpeg",
     lastMessage: "Hey, How are you?",
     timestamp: "11:10",
+    senderId: 2,
   },
 ];
 
