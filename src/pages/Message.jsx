@@ -1,4 +1,13 @@
-import { Avatar, Box, Link, Stack, TextField, Typography } from "@mui/material";
+import { MessageOutlined } from "@mui/icons-material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Link,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 const receiver = {
@@ -26,10 +35,23 @@ function Message(_props) {
     // fetch chat based on path
   }, []);
   const [chat, setChat] = useState(chatRes);
+  const [latestMessage, setLatestMessage] = useState("");
 
+  const updateChat = (msg) => {
+    const currentMessages = [...chat];
+    currentMessages.push(msg);
+    setChat(currentMessages);
+    setInputToNull();
+  };
+  const setInputToNull = () => {
+    const node = document.getElementById("new-message");
+    if(!node) return;
+    console.log(node.value);
+    node.value = "";
+  }
   return (
     <Box>
-      <Stack direction="row" sx={{alignItems: "center"}}>
+      <Stack direction="row" sx={{ alignItems: "center" }}>
         <Avatar
           src={receiver.avatar}
           alt={receiver.name}
@@ -41,20 +63,36 @@ function Message(_props) {
         <hr />
       </Typography>
       <Box>
-      <Stack
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="stretch"
-        spacing={2}
-      >
-        {chat.map((message, i) => (
-          <div>
-
-            {message.messageContent}
-          </div>
-        ))}
-      </Stack>
+        <Stack
+          direction="column"
+          justifyContent="flex-start"
+          alignItems="stretch"
+          spacing={2}
+        >
+          {chat.map((message, i) => (
+            <div key={i}>{message.messageContent}</div>
+          ))}
+        </Stack>
       </Box>
+      <Stack direction="row" sx={{ alignItems: "center" }}>
+        <TextField
+        placeholder="Your Message..."
+          onChange={(e) => {
+            setLatestMessage(e.target.value);
+          }}
+          id="new-message"
+        ></TextField>
+        <Button
+          onClick={() => {
+            updateChat({
+              messageType: "sender",
+              messageContent: latestMessage,
+            });
+          }}
+        >
+          Send
+        </Button>
+      </Stack>
     </Box>
   );
 }
