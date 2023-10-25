@@ -29,7 +29,7 @@ function Message({ socket }) {
     const handleNewMessage = (msg) => {
       // this is simulating where we would have a service to post the mmessage to the DB, then
       // retrieve this from the db in another fn - that will tell socket a nnew mmessage has come.
-      setChat(prevChat => [...prevChat, msg])
+      setChat((prevChat) => [...prevChat, msg]);
     };
     if (socket) {
       socket.on("newMessage", handleNewMessage);
