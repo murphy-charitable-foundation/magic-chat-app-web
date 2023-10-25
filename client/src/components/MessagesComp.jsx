@@ -1,8 +1,7 @@
 import { Box, Stack } from "@mui/material";
 import React from "react";
 
-export default function MessagesComp({socket}){
-  const chat = [];
+export default function MessagesComp({socket, chat=[]}){
   return (
     <div>
       <Box>

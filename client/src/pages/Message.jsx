@@ -1,6 +1,6 @@
 import { Avatar, Box, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import MessagesComp from "../components/Messages";
+import MessagesComp from "../components/MessagesComp";
 import NewMessage from "../components/NewMessage";
 
 const receiver = {
@@ -25,18 +25,19 @@ const chatRes = [
 
 function Message({ socket }) {
   useEffect(() => {
-    const handleNewMessage = () => {
-      console.log('message received');
+    const handleNewMessage = (msg) => {
+      const newChat = [...chat];
+      newChat.push(msg);
+      // this is simulating where we would have a service to post the mmessage to the DB, then 
+      // retrieve this from the db in another fn - that will tell socket a nnew mmessage has come.
+      setChat(newChat);
     };
-    console.log(socket)
-    if(socket){
+    if (socket) {
       socket.on("newMessage", handleNewMessage);
     }
     return () => {
-      if(socket){
-      socket.off("newMessage", handleNewMessage)
-    }
-    }
+        socket.off("newMessage", handleNewMessage);
+    };
   }, [socket]);
 
   const [chat, setChat] = useState(chatRes);
@@ -53,7 +54,7 @@ function Message({ socket }) {
       <Typography variant="paragragh" paddingX={2} marginX={2}>
         <hr />
       </Typography>
-      <MessagesComp socket={socket} />
+      <MessagesComp socket={socket} chat={chat} />
       <NewMessage socket={socket} />
     </Box>
   );

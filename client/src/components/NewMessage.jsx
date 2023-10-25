@@ -5,10 +5,7 @@ export default function NewMessage({ socket }) {
   const [latestMessage, setLatestMessage] = useState("");
 
   const updateChat = (msg) => {
-    const currentMessages = [];
-    socket.connect();
     socket.emit("newMessage", msg);
-    currentMessages.push(msg);
     setInputToNull();
     setLatestMessage("");
   };
