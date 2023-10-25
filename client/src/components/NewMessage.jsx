@@ -9,7 +9,6 @@ export default function NewMessage({ socket }) {
     setInputToNull();
     setLatestMessage("");
   };
-  
 
   const setInputToNull = () => {
     const node = document.getElementById("new-message");

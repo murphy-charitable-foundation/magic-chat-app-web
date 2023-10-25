@@ -8,6 +8,7 @@ const receiver = {
   name: "Festus",
   avatar: "./images/festus.jpeg",
 };
+// this is based on the Flutter fake res
 const chatRes = [
   {
     messageContent: "Hello, Will",
@@ -26,17 +27,15 @@ const chatRes = [
 function Message({ socket }) {
   useEffect(() => {
     const handleNewMessage = (msg) => {
-      const newChat = [...chat];
-      newChat.push(msg);
-      // this is simulating where we would have a service to post the mmessage to the DB, then 
+      // this is simulating where we would have a service to post the mmessage to the DB, then
       // retrieve this from the db in another fn - that will tell socket a nnew mmessage has come.
-      setChat(newChat);
+      setChat(prevChat => [...prevChat, msg])
     };
     if (socket) {
       socket.on("newMessage", handleNewMessage);
     }
     return () => {
-        socket.off("newMessage", handleNewMessage);
+      socket.off("newMessage", handleNewMessage);
     };
   }, [socket]);
 
@@ -54,7 +53,7 @@ function Message({ socket }) {
       <Typography variant="paragragh" paddingX={2} marginX={2}>
         <hr />
       </Typography>
-      <MessagesComp socket={socket} chat={chat} />
+      <MessagesComp chat={chat} />
       <NewMessage socket={socket} />
     </Box>
   );
