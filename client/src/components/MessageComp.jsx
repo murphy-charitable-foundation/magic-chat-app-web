@@ -7,16 +7,16 @@ const styling = {
       "background": "#D2E8C2",
       "alignSelf": "flex-end",
       "borderRadius": "10%",
-      "boxShadow": "#727272 0px 2px 1px",
-      "marginBottom": "4px !important"
+      "boxShadow": "#727272 0px 2px 2px",
+      "margin": "0 1px 4px 0 !important"
     },
     "receiver": {
       "padding": "5px 8px 26px",
       "background": "#F4F4F4",
       "alignSelf": "flex-start",
       "borderRadius": "10%",
-      "boxShadow": "#727272 0px 2px 1px",
-      "marginBottom": "4px !important"
+      "boxShadow": "#727272 0px 2px 2px",
+      "margin": "0 0 4px 1px !important"
     }
 }
 

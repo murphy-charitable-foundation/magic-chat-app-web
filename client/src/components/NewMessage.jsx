@@ -23,6 +23,9 @@ export default function NewMessage({ socket }) {
           setLatestMessage(e.target.value);
         }}
         id="new-message"
+        sx={{
+          flex: 1
+        }}
       ></TextField>
       <Button
         onClick={() => {
