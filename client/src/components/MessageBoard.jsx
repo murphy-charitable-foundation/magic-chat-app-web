@@ -9,45 +9,46 @@ export default function MessageBoard({ messages, socket }) {
       spacing={2}
     >
       {messages?.map((chat, i) => (
-        <Box key={i}>
-          <Stack
-            direction="row"
-            justifyContent="flex-start"
-            alignItems="center"
-            spacing={2}
+        <Box key={i} sx={{ background: "#F5F5F5", padding: "8px 16px" }}>
+          <Link
+            href={`/messages/${chat.senderId}`}
+            sx={{ textDecoration: "none" }}
           >
-            <Avatar
-              alt={chat.name}
-              sx={{ alignContent: "end" }}
-              src={chat.imgSrc}
-            />
             <Stack
-              direction="column"
+              direction="row"
               justifyContent="flex-start"
-              alignItems="stretch"
+              alignItems="center"
               spacing={2}
             >
-              <Link href={`/messages/${chat.senderId}`}>View Chat</Link>
-              <Typography variant="h5" sx={{ fontWeight: "bold", mt: 0 }}>
-                {chat.name}
+              <Avatar
+                alt={chat.name}
+                sx={{ alignContent: "end", height: "54px", width: "54px" }}
+                src={chat.imgSrc}
+              />
+              <Stack
+                direction="column"
+                justifyContent="flex-start"
+                alignItems="start"
+                spacing={2}
+                >
+                <Typography variant="h5" sx={{ fontWeight: "600", mt: 0, color: "#000" }}>
+                  {chat.name}
+                </Typography>
+                <Typography variant="span" sx={{color: "#3F4945", mt: "0 !important"}}>{chat.lastMessage}</Typography>
+              </Stack>
+              <Typography
+                variant="paragraph"
+                sx={{
+                  color: "#878787",
+                  alignSelf: "flex-start",
+                  flex: 1,
+                  textAlign: "end",
+                }}
+              >
+                {chat.timestamp}
               </Typography>
-              <Typography variant="paragragh">{chat.lastMessage}</Typography>
             </Stack>
-            <Typography
-              variant="paragraph"
-              sx={{
-                fontStyle: "italic",
-                alignSelf: "flex-start",
-                flex: 1,
-                textAlign: "end",
-              }}
-            >
-              {chat.timestamp}
-            </Typography>
-          </Stack>
-          <Typography variant="paragragh" paddingX={2} marginX={2}>
-            <hr />
-          </Typography>
+          </Link>
         </Box>
       ))}
     </Stack>

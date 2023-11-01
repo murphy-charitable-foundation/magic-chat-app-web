@@ -1,4 +1,13 @@
-import { Box, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  InputAdornment,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import React, { useState } from "react";
 import MessageBoard from "../components/MessageBoard";
 
@@ -19,11 +28,15 @@ const chatsRes = [
   },
 ];
 
-const Messages = ({socket}) => {
+const Messages = ({ socket }) => {
   const [chats, setChats] = useState(chatsRes);
   const [searchText, setSearchText] = useState("");
 
   const handleSearchTextChange = (event) => {
+    if (!event) {
+      setChats(chatsRes);
+      return;
+    }
     const newText = event.target.value;
     setSearchText(newText);
     const filteredChats = chatsRes.filter((chat) =>
@@ -32,23 +45,53 @@ const Messages = ({socket}) => {
     setChats(filteredChats);
   };
 
+  const clearText = () => {
+    setSearchText("");
+    handleSearchTextChange();
+  };
+
   return (
     <Box>
-      <Typography variant="h1">Chats</Typography>
-      <TextField
-        id="outlined-basic"
-        label="Search"
-        variant="outlined"
-        fullWidth
-        value={searchText}
-        onChange={handleSearchTextChange}
-      />
-      <Typography variant="paragragh" paddingX={2} marginX={2}>
-        <hr />
-      </Typography>
-      { socket && (
-        <MessageBoard messages={chats} socket={socket} />
-      )}
+      <Stack
+        sx={{
+          marginBottom: "16px",
+        }}
+      >
+        <Typography variant="h1">Chats</Typography>
+        <TextField
+          id="outlined-basic"
+          variant="standard"
+          placeholder="Search"
+          fullWidth
+          value={searchText}
+          onChange={handleSearchTextChange}
+          InputProps={{
+            disableUnderline: true,
+            style: {
+              outline: "none",
+              borderRadius: "12px 12px 0px 0px",
+              borderBottom: "solid #000",
+            },
+            startAdornment: (
+              <InputAdornment position="start">
+                <IconButton sx={{ pointerEvents: "none"}}>
+                  <SearchIcon sx={{ fill: "#3F4945" }} />
+                </IconButton>
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                {searchText && (
+                  <IconButton onClick={clearText}>
+                    <HighlightOffIcon />
+                  </IconButton>
+                )}
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Stack>
+      {socket && <MessageBoard messages={chats} socket={socket} />}
     </Box>
   );
 };

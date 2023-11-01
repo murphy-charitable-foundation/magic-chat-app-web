@@ -15,7 +15,7 @@ export default function MessagesComp({ chat = [] }) {
           justifyContent="end"
         >
           {chat.map((message, i) => (
-            <div key={i}>{message.messageContent} <span>{message.messageType}</span></div>
+            <div key={i}>{message.messageContent} <span>-- {message.messageType}</span></div>
           ))}
         </Stack>
       </Box>
