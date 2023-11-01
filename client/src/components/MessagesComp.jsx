@@ -1,5 +1,6 @@
 import { Box, Stack } from "@mui/material";
 import React from "react";
+import MessageComp from "./MessageComp";
 
 export default function MessagesComp({ chat = [] }) {
   return (
@@ -7,7 +8,6 @@ export default function MessagesComp({ chat = [] }) {
       <Box>
         <Stack
           direction="column"
-          alignItems="stretch"
           spacing={2}
           minHeight="40vh"
           maxHeight="40vh"
@@ -15,7 +15,8 @@ export default function MessagesComp({ chat = [] }) {
           justifyContent="end"
         >
           {chat.map((message, i) => (
-            <div key={i}>{message.messageContent} <span>-- {message.messageType}</span></div>
+            <MessageComp messageData={message} key={i} />
+            // <div key={i}>{message.messageContent} <span>-- {message.messageType}</span></div>
           ))}
         </Stack>
       </Box>

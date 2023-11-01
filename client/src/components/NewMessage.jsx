@@ -16,7 +16,7 @@ export default function NewMessage({ socket }) {
     node.value = "";
   };
   return (
-    <Stack direction="row" sx={{ alignItems: "center" }}>
+    <Stack direction="row" sx={{ alignItems: "center", marginTop: "12px" }}>
       <TextField
         placeholder="Your Message..."
         onChange={(e) => {
