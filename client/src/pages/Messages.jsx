@@ -8,8 +8,17 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MessageBoard from "../components/MessageBoard";
+
+import {firebase} from "../firebase";
+import {
+  collection,
+  getDocs,
+  query,
+  setDoc,
+  doc,
+} from "firebase/firestore/lite";
 
 const chatsRes = [
   {
@@ -31,6 +40,32 @@ const chatsRes = [
 const Messages = ({ socket }) => {
   const [chats, setChats] = useState(chatsRes);
   const [searchText, setSearchText] = useState("");
+  const [db, setDb] = useState(null);
+  // --------- new
+
+  useEffect(() => {
+    setDb(firebase);
+  }, []);
+
+  useEffect(() => {
+    if (!db) return;
+
+    async function getMessages(db) {
+      try {
+        const messagesCol = collection(db, "message-collection");
+        const q = query(messagesCol);
+        const msgSnapshot = await getDocs(q);
+        const msgList = msgSnapshot.docs.map(
+          (doc) => doc.data()
+        );
+      } catch (e) {
+        console.error("Error getting messages: ", e)
+      }
+    }
+
+    getMessages(db);
+  }, [db]);
+  // till here --------
 
   const handleSearchTextChange = (event) => {
     if (!event) {
