@@ -3,46 +3,81 @@ import React, { useEffect, useState } from "react";
 import MessagesComp from "../components/MessagesComp";
 import NewMessage from "../components/NewMessage";
 
-const receiver = {
-  id: 1,
-  name: "Festus",
-  avatar: "./images/festus.jpeg",
-};
-// this is based on the Flutter fake res
-const chatRes = [
-  {
-    messageContent: "Hello, Will",
-    messageType: "receiver",
-  },
-  {
-    messageContent: "Hey!",
-    messageType: "sender",
-  },
-  {
-    messageContent: "How are you?",
-    messageType: "receiver",
-  },
-];
+import { firestore, auth } from "../firebase";
+import {
+  collection,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+  getDocs,
+  addDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
-function Message({ socket }) {
+function Message() {
+  const [message, setMessage] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
-    const handleNewMessage = (msg) => {
-      // this is simulating where we would have a service to post the mmessage to the DB, then
-      // retrieve this from the db in another fn - that will tell socket a nnew mmessage has come.
-      setChat((prevChat) => [...prevChat, msg]);
-    };
-    if (socket) {
-      socket.on("newMessage", handleNewMessage);
-    }
-    return () => {
-      socket.off("newMessage", handleNewMessage);
-    };
-  }, [socket]);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return unsubscribe;
+  });
 
-  const [chat, setChat] = useState(chatRes);
+  useEffect(() => {
+    const messageRef = collection(firestore, "letterbox");
+    const q = query(messageRef);
+    console.log("q", q);
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const messages = snapshot.docs.map(async (doc) => {
+        const subcollectionRef = collection(doc.ref, "letters");
+        const subcollectionDocs = await getDocs(subcollectionRef);
+
+        return {
+          id: doc.id,
+          mainCollectionData: doc.data(),
+          subcollectionData: subcollectionDocs.docs.map((subDoc) => ({
+            subId: subDoc.id,
+            ...subDoc.data(),
+          })),
+        };
+      });
+      Promise.all(messages).then((resolvedMessages) => {
+        setMessage(resolvedMessages);
+      });
+      console.log(messages);
+    });
+    return unsubscribe;
+  }, []);
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+
+    if (!newMessage.trim()) return;
+
+    const letterboxCollection = collection(firestore, "letterbox");
+    const letterboxDocRef = await addDoc(letterboxCollection, {
+      // Add any data specific to the "letterbox" document
+    });
+
+    const lettersSubcollectionRef = collection(letterboxDocRef, "letters");
+
+    await addDoc(lettersSubcollectionRef, {
+      letter: newMessage,
+      time: serverTimestamp(),
+      sentby: auth.currentUser.uid,
+      type: "text",
+    });
+    console.log(auth.currentUser)
+
+    setNewMessage("");
+  };
   return (
     <Box>
-      <Stack direction="row" sx={{ alignItems: "center" }}>
+      {/* <Stack direction="row" sx={{ alignItems: "center" }}>
         <Avatar
           src={receiver.avatar}
           alt={receiver.name}
@@ -53,8 +88,32 @@ function Message({ socket }) {
       <Typography variant="paragragh" paddingX={2} marginX={2}>
         <hr />
       </Typography>
-      <MessagesComp chat={chat} />
-      <NewMessage socket={socket} />
+      <MessagesComp chat={[]} />
+      <NewMessage /> */}
+      <div>
+        {user ? (
+          <div>
+            {message.map((msg, i) => (
+              <div>
+                <div key={msg.id ?? i}>
+                  <p>Sent by: {msg.subcollectionData[0].sentby}</p>
+                  <p>{msg.subcollectionData[0].letter}</p>
+                  {JSON.stringify(msg)}
+                </div>
+              </div>
+            ))}
+            <form onSubmit={sendMessage}>
+              <input
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+              />
+              <button type="submit">Send</button>
+            </form>
+          </div>
+        ) : (
+          <div>not logged in</div>
+        )}
+      </div>
     </Box>
   );
 }

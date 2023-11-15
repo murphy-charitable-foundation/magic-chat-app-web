@@ -1,13 +1,10 @@
 import { Button, Stack, TextField } from "@mui/material";
 import React, { useState } from "react";
 
-export default function NewMessage({ socket }) {
+export default function NewMessage() {
   const [latestMessage, setLatestMessage] = useState("");
 
   const updateChat = (msg) => {
-    socket.emit("newMessage", msg);
-    setInputToNull();
-    setLatestMessage("");
   };
 
   const setInputToNull = () => {

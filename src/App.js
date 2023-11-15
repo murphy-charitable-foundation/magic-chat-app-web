@@ -15,17 +15,8 @@ import GuestLayout from "./components/LayoutGuest.jsx";
 import Messages from "./pages/Messages";
 import Message from "./pages/Message";
 import AccountSetting from "./pages/AccountSetting";
-import { useEffect, useState } from "react";
-import { socket } from "./socket";
 
 function App() {
-  useEffect(() => {
-    socket.connect();
-    return () => {
-      // socket.disconnect()
-    };
-  }, []);
-
   return (
     <BrowserRouter>
       {/* <Container maxWidth="900" sx={{ marginTop: 2, paddingX: 3, paddingY: 3 }}>
@@ -39,10 +30,10 @@ function App() {
           <Route path="/donate" element={<Donate />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
-          <Route path="/messages" element={<Messages socket={socket} />} />
+          <Route path="/messages" element={<Messages />} />
           <Route
             path="/messages/:id"
-            element={<Message socket={socket} />}
+            element={<Message />}
           />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/account-setting" element={<AccountSetting />} />
