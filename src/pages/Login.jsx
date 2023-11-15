@@ -17,7 +17,25 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Footer from "../components/Footer";
 import GuestHeader from "../components/HeaderGuest";
 
+import { auth } from '../firebase'
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+
+
+
+
+
 const Login = () => {
+
+  const signInWithGoogle = () => {
+    const provider = new GoogleAuthProvider()
+    signInWithPopup(auth, provider).then(result => {
+      console.log("success")
+      navigate("/messages")
+    }).catch(e => {
+      console.error("Error: ", e)
+    })
+  }
+
   const navigate = useNavigate();
   const [isLoggedIn, setIsloggedIn] = useState(false);
 
@@ -42,7 +60,7 @@ const Login = () => {
     <>
       <GuestHeader />
       <Container component="main" maxWidth="xs">
-        {/* <CssBaseline /> */}
+        <button onClick={signInWithGoogle}>Sign In With Google</button>
         <Box
           sx={{
             marginTop: 3,
@@ -107,11 +125,6 @@ const Login = () => {
                   Forgot password?
                 </Link>
               </Grid>
-              {/* <Grid>
-                <Link to="/register" variant="body2">
-                  {"Don't have an account? Register"}
-                </Link>
-              </Grid> */}
             </Grid>
           </Box>
         </Box>
