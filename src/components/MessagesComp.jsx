@@ -3,6 +3,8 @@ import React from "react";
 import MessageComp from "./MessageComp";
 
 export default function MessagesComp({ chat = [] }) {
+  const filteredChat = chat.filter(msg => msg.subcollectionData.length)
+  const orderedChat = filteredChat.sort((a, b) => a.subcollectionData[0].time.seconds - b.subcollectionData[0].time.seconds)
   return (
     <div>
       <Box>
@@ -14,9 +16,8 @@ export default function MessagesComp({ chat = [] }) {
           overflow="scroll"
           justifyContent="end"
         >
-          {chat.map((message, i) => (
-            <MessageComp messageData={message} key={i} />
-            // <div key={i}>{message.messageContent} <span>-- {message.messageType}</span></div>
+          {orderedChat.map((message) => (
+            <MessageComp messageData={message} key={message.id} />
           ))}
         </Stack>
       </Box>

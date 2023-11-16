@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MessageBoard from "../components/MessageBoard"; 
 
 const chatsRes = [
@@ -91,7 +91,7 @@ const Messages = () => {
           }}
         />
       </Stack>
-      {/* {<MessageBoard messages={_messages} />} */}
+      {<MessageBoard messages={chats} />}
     </Box>
   );
 };

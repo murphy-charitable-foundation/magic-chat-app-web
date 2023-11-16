@@ -17,16 +17,30 @@ const styling = {
       "borderRadius": "10%",
       "boxShadow": "#727272 0px 2px 2px",
       "margin": "0 0 4px 1px !important"
+    },
+    "default": {
+      "padding": "5px 8px 26px",
+      "background": "#F4F4F4",
+      "alignSelf": "flex-start",
+      "borderRadius": "10%",
+      "boxShadow": "#727272 0px 2px 2px",
+      "margin": "0 0 4px 1px !important"
     }
 }
 
 export default function MessageComp({ messageData }) {
-  const boxStyling = styling[messageData.messageType]
-  return (
-    <Box sx={boxStyling}>
-      <div>
-        {messageData.messageContent}
-      </div>
-    </Box>
-  );
+  const boxStyling = styling[messageData.messageType ?? "default"]
+  if (messageData.subcollectionData && messageData.subcollectionData.length > 0) {
+    return (
+      <Box sx={boxStyling}>
+        <div>
+          {/* <p>Sent by: {messageData.subcollectionData[0]?.sentby}</p> */}
+          <p>{messageData.subcollectionData[0]?.letter}</p>
+          <p>{JSON.stringify(messageData.subcollectionData[0]?.time)}</p>
+        </div>
+      </Box>
+    );
+  } else {
+    return null;
+  }
 }
