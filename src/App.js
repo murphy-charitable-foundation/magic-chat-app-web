@@ -19,11 +19,8 @@ import AccountSetting from "./pages/AccountSetting";
 function App() {
   return (
     <BrowserRouter>
-      {/* <Container maxWidth="900" sx={{ marginTop: 2, paddingX: 3, paddingY: 3 }}>
-        <Paper elevation={3} sx={{ minHeight: 400 }}> */}
       <Routes>
         <Route path="/" element={<Login />} />
-        {/* <Route path="/home" element={<Home />} />*/}
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Layout />}>
           <Route path="/profile" element={<Profile />} />
@@ -43,8 +40,6 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
       </Routes>
-      {/* </Paper>
-      </Container> */}
     </BrowserRouter>
   );
 }

@@ -1,10 +1,9 @@
 import { Box, Stack } from "@mui/material";
 import React from "react";
-import MessageComp from "./MessageComp";
+import Message from "./Message";
 
-export default function MessagesComp({ chat = [] }) {
-  const filteredChat = chat.filter(msg => msg.subcollectionData.length)
-  const orderedChat = filteredChat.sort((a, b) => a.subcollectionData[0].time.seconds - b.subcollectionData[0].time.seconds)
+export default function MessagesDisplay({ chat = [] }) {
+  const orderedChat = chat.sort((a, b) => a.time.seconds - b.time.seconds)
   return (
     <div>
       <Box>
@@ -17,7 +16,7 @@ export default function MessagesComp({ chat = [] }) {
           justifyContent="end"
         >
           {orderedChat.map((message) => (
-            <MessageComp messageData={message} key={message.id} />
+            <Message messageData={message} key={message.id} />
           ))}
         </Stack>
       </Box>
