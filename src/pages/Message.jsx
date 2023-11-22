@@ -74,6 +74,48 @@ function Message() {
         type: "text",
         id: 2,
       },
+      {
+        letter: "Hey Charlie",
+        time: { seconds: 1700152847, nanoseconds: 514000000 },
+        sentby: receiver.uid,
+        type: "text",
+        id: 1,
+      },
+      {
+        letter: "Hey Festus",
+        time: { seconds: 1700254847, nanoseconds: 514000000 },
+        sentby: auth.currentUser?.uid,
+        type: "text",
+        id: 2,
+      },
+      {
+        letter: "Hey Charlie",
+        time: { seconds: 1700152847, nanoseconds: 514000000 },
+        sentby: receiver.uid,
+        type: "text",
+        id: 1,
+      },
+      {
+        letter: "Hey Festus",
+        time: { seconds: 1700254847, nanoseconds: 514000000 },
+        sentby: auth.currentUser?.uid,
+        type: "text",
+        id: 2,
+      },
+      {
+        letter: "Hey Charlie",
+        time: { seconds: 1700152847, nanoseconds: 514000000 },
+        sentby: receiver.uid,
+        type: "text",
+        id: 1,
+      },
+      {
+        letter: "Hey Festus",
+        time: { seconds: 1700254847, nanoseconds: 514000000 },
+        sentby: auth.currentUser?.uid,
+        type: "text",
+        id: 2,
+      },
     ]);
     // });
 
@@ -104,6 +146,7 @@ function Message() {
           alignItems: "center",
           background: "#E6EDF4",
           padding: "24px 0 30px 60px",
+          borderRadius: "0 0 8px 8px"
         }}
       >
         <Avatar
@@ -113,7 +156,7 @@ function Message() {
         />
         <Typography variant="h3" fontSize="22px">{receiver.name}</Typography>
       </Stack>
-      <Box>
+      <Box sx={{padding: 3, paddingTop: 0}}>
         {user ? (
           <div>
             <MessagesDisplay chat={message} />
