@@ -17,8 +17,20 @@ export default function NewMessage({ newMessage, sendMessage, setNewMessage }) {
               setNewMessage(e.target.value);
             }}
             id="new-message"
+            InputProps={{
+              style: {
+                borderRadius: "12px"
+              }
+            }}
             sx={{
               flex: 1,
+            }}
+            inputProps={{
+              style: {
+                padding: "8px",
+                minHeight: "24px",
+                maxHeight: "56px",
+              }
             }}
           ></TextField>
           {newMessage ? (
