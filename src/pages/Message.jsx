@@ -4,14 +4,16 @@ import MessagesDisplay from "../components/MessagesDisplay";
 import NewMessage from "../components/NewMessage";
 
 import { firestore, auth } from "../firebase";
-import {
-  collection,
-  query,
-  onSnapshot,
-  getDocs,
-  addDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { ArrowBack } from "@mui/icons-material";
+import { Link } from "react-router-dom";
+// import {
+//   collection,
+//   query,
+//   onSnapshot,
+//   getDocs,
+//   addDoc,
+//   serverTimestamp,
+// } from "firebase/firestore";
 
 function Message() {
   const [message, setMessage] = useState([]);
@@ -76,51 +78,51 @@ function Message() {
       },
       {
         letter: "Hey Charlie",
-        time: { seconds: 1700152847, nanoseconds: 514000000 },
+        time: { seconds: 1700254897, nanoseconds: 514000000 },
         sentby: receiver.uid,
         type: "text",
-        id: 1,
+        id: 3,
       },
       {
         letter: "Hey Festus",
-        time: { seconds: 1700254847, nanoseconds: 514000000 },
+        time: { seconds: 1700255897, nanoseconds: 514000000 },
         sentby: auth.currentUser?.uid,
         type: "text",
-        id: 2,
+        id: 4,
       },
       {
         letter: "Hey Charlie",
-        time: { seconds: 1700152847, nanoseconds: 514000000 },
+        time: { seconds: 1700256897, nanoseconds: 514000000 },
         sentby: receiver.uid,
         type: "text",
-        id: 1,
+        id: 6,
       },
       {
         letter: "Hey Festus",
-        time: { seconds: 1700254847, nanoseconds: 514000000 },
+        time: { seconds: 1700256898, nanoseconds: 514000000 },
         sentby: auth.currentUser?.uid,
         type: "text",
-        id: 2,
+        id: 7,
       },
       {
         letter: "Hey Charlie",
-        time: { seconds: 1700152847, nanoseconds: 514000000 },
+        time: { seconds: 1700266898, nanoseconds: 514000000 },
         sentby: receiver.uid,
         type: "text",
-        id: 1,
+        id: 8,
       },
       {
         letter: "Hey Festus",
-        time: { seconds: 1700254847, nanoseconds: 514000000 },
+        time: { seconds: 1700266899, nanoseconds: 514000000 },
         sentby: auth.currentUser?.uid,
         type: "text",
-        id: 2,
+        id: 92,
       },
     ]);
     // });
 
     // return unsubscribe;
-  }, [auth.currentUser]);
+  }, [receiver.uid, auth.currentUser]);
 
   const sendMessage = async (e) => {
     //   e.preventDefault();
@@ -145,18 +147,23 @@ function Message() {
         sx={{
           alignItems: "center",
           background: "#E6EDF4",
-          padding: "24px 0 30px 60px",
-          borderRadius: "0 0 8px 8px"
+          padding: "24px 0 30px",
+          borderRadius: "0 0 8px 8px",
         }}
       >
+        <Link to="/messages">
+          <ArrowBack sx={{ padding: "4px", margin: "0 18px", fill: "#000" }} />
+        </Link>
         <Avatar
           src={receiver.avatar}
           alt={receiver.name}
           sx={{ alignContent: "end", marginRight: "12px" }}
         />
-        <Typography variant="h3" fontSize="22px">{receiver.name}</Typography>
+        <Typography variant="h3" fontSize="22px">
+          {receiver.name}
+        </Typography>
       </Stack>
-      <Box sx={{padding: 3, paddingTop: 0}}>
+      <Box sx={{ padding: 3, paddingTop: 0 }}>
         {user ? (
           <div>
             <MessagesDisplay chat={message} />
