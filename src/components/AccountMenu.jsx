@@ -67,7 +67,7 @@ export default function AccountMenu() {
             aria-expanded={open ? "true" : undefined}
           >
             <Avatar sx={{ width: 32, height: 32 }}>
-              <Link to="/profile">M</Link>
+              <Link to="/profile">J</Link>
             </Avatar>
           </IconButton>
         </Tooltip>
