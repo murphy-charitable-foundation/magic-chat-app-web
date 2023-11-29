@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
-  Avatar,
   Box,
-  Button,
-  Stack,
   Typography,
+  Avatar,
+  Button,
   TextField,
   Paper,
   List,
@@ -16,20 +15,28 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Select from "react-select";
-
 const Profile = () => {
-  const [isEditingBio, setIsEditingBio] = useState(false);
-  const [isEditingInterests, setIsEditingInterests] = useState(false);
-  const [bio, setBio] = useState("Your bio goes here");
+  console.log("Rendering Profile component");
+  const [userDetails, setUserDetails] = useState({
+    uniqueDocumentId: "123456789",
+    photo: "./user-avatar.jpg",
+    email: "user@example.com",
+    firstName: "John",
+    lastName: "Doe",
+    bio: "Your bio goes here",
+    gender: "Prefer not to say",
+    country: null,
+    profession: "Developer",
+    favoriteAnimal: "Dog",
+    hobby: "Reading",
+    lastOnline: "10 minutes ago",
+  });
   const [interests, setInterests] = useState([
     "Interest 1",
     "Interest 2",
     "Interest 3",
   ]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
   const [countryOptions, setCountryOptions] = useState([]);
-
-  // Fetch list of countries and their flags
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all")
       .then((response) => response.json())
@@ -50,192 +57,147 @@ const Profile = () => {
         setCountryOptions(options);
       });
   }, []);
-
-  const handleEditBioClick = () => {
-    setIsEditingBio(true);
-  };
-
-  const handleSaveBioClick = () => {
-    setIsEditingBio(false);
-  };
-
-  const handleEditInterestsClick = () => {
-    setIsEditingInterests(true);
-  };
-
-  const handleSaveInterestsClick = () => {
-    setIsEditingInterests(false);
-  };
-
   const handleBioChange = (event) => {
-    setBio(event.target.value);
+    setUserDetails({ ...userDetails, bio: event.target.value });
   };
-
+  const handleInputChange = (event, field) => {
+    setUserDetails({ ...userDetails, [field]: event.target.value });
+  };
+  const handleCountryChange = (selectedOption) => {
+    setUserDetails({ ...userDetails, country: selectedOption });
+  };
   const handleInterestChange = (event, index) => {
     const updatedInterests = [...interests];
     updatedInterests[index] = event.target.value;
     setInterests(updatedInterests);
   };
-
   const handleAddInterest = () => {
-    const newInterest = "New Interest";
-    setInterests([...interests, newInterest]);
+    setInterests([...interests, "New Interest"]);
   };
-
   const handleDeleteInterest = (index) => {
-    const updatedInterests = [...interests];
-    updatedInterests.splice(index, 1);
-    setInterests(updatedInterests);
+    setInterests(interests.filter((_, i) => i !== index));
   };
-
   return (
-    <Box>
-      <Stack direction="row" alignItems="center">
-        <Box flex="1">
-          <Typography variant="h5" component="h5">
-            Welcome back, Festus!
-          </Typography>
-        </Box>
-        <Box>
-          <Avatar alt="Festus" src="./images/festus.jpg" />
-        </Box>
-      </Stack>
-
-      <Typography variant="paragraph" paddingX={2} marginX={2}>
-        <hr />
-      </Typography>
-
-      <Box padding={2}>
-        {isEditingBio ? (
-          <Paper elevation={3}>
-            <Box padding={2}>
-              <Typography variant="h6">Edit Bio</Typography>
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                label="Bio"
-                variant="outlined"
-                value={bio}
-                onChange={handleBioChange}
-              />
-              <Box marginTop={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSaveBioClick}
-                >
-                  Save Bio
-                </Button>
-              </Box>
-            </Box>
-          </Paper>
-        ) : (
-          <Box>
-            <Typography variant="h6">Bio</Typography>
-            <Typography variant="paragraph" component="p">
-              {bio}
-            </Typography>
-            <Box marginTop={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleEditBioClick}
-              >
-                Edit Bio
-              </Button>
-            </Box>
-          </Box>
-        )}
-
-        {isEditingInterests ? (
-          <Paper elevation={3}>
-            <Box padding={2}>
-              <Typography variant="h6">Edit Interests</Typography>
-              <List>
-                {interests.map((interest, index) => (
-                  <div key={index}>
-                    <ListItem>
-                      <ListItemText>
-                        <TextField
-                          fullWidth
-                          label="Interest"
-                          variant="outlined"
-                          value={interest}
-                          onChange={(e) => handleInterestChange(e, index)}
-                        />
-                      </ListItemText>
-                      <ListItemSecondaryAction>
-                        <IconButton
-                          edge="end"
-                          aria-label="delete"
-                          onClick={() => handleDeleteInterest(index)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                    {index < interests.length - 1 && <Divider />}
-                  </div>
-                ))}
-              </List>
-              <Box marginTop={2}>
-                <Button
-                  variant="outlined"
-                  onClick={handleAddInterest}
-                >
-                  Add Interest
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSaveInterestsClick}
-                  style={{ marginLeft: "10px" }}
-                >
-                  Save Interests
-                </Button>
-              </Box>
-            </Box>
-          </Paper>
-        ) : (
-          <Box>
-            <Typography variant="h6">Interests</Typography>
-            <List>
-              {interests.map((interest, index) => (
-                <div key={index}>
-                  <ListItem>
-                    <ListItemText primary={interest} />
-                  </ListItem>
-                  {index < interests.length - 1 && <Divider />}
-                </div>
-              ))}
-            </List>
-            <Box marginTop={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleEditInterestsClick}
-              >
-                Edit Interests
-              </Button>
-            </Box>
-          </Box>
-        )}
+    <Box padding={2}>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={2}
+      >
+        <Typography variant="h5">
+          Welcome back, {userDetails.firstName}!
+        </Typography>
+        <Avatar alt={userDetails.firstName} src={userDetails.photo} />
       </Box>
-
-      <Box padding={2}>
-        <Typography variant="h6">Country</Typography>
+      <Divider />
+      {/* User Details Section */}
+      <Box mt={2}>
+        <Typography variant="h6">User Details</Typography>
+        <TextField
+          fullWidth
+          label="Email"
+          variant="outlined"
+          value={userDetails.email}
+          onChange={(e) => handleInputChange(e, "email")}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="First Name"
+          variant="outlined"
+          value={userDetails.firstName}
+          onChange={(e) => handleInputChange(e, "firstName")}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Last Name"
+          variant="outlined"
+          value={userDetails.lastName}
+          onChange={(e) => handleInputChange(e, "lastName")}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Profession"
+          variant="outlined"
+          value={userDetails.profession}
+          onChange={(e) => handleInputChange(e, "profession")}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Favorite Animal"
+          variant="outlined"
+          value={userDetails.favoriteAnimal}
+          onChange={(e) => handleInputChange(e, "favoriteAnimal")}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Hobby"
+          variant="outlined"
+          value={userDetails.hobby}
+          onChange={(e) => handleInputChange(e, "hobby")}
+          margin="normal"
+        />
+        <Typography paragraph>Last Online: {userDetails.lastOnline}</Typography>
         <Select
           options={countryOptions}
-          value={selectedCountry}
-          onChange={(selectedOption) => setSelectedCountry(selectedOption)}
+          value={userDetails.country}
+          onChange={handleCountryChange}
           isSearchable
           placeholder="Select a country..."
+          styles={{ container: (base) => ({ ...base, marginTop: 8 }) }}
         />
+      </Box>
+      {/* Bio Section */}
+      <Box mt={2}>
+        <Typography variant="h6">Bio</Typography>
+        <TextField
+          fullWidth
+          multiline
+          rows={4}
+          label="Bio"
+          variant="outlined"
+          value={userDetails.bio}
+          onChange={handleBioChange}
+          margin="normal"
+        />
+      </Box>
+      {/* Interests Section */}
+      <Box mt={2}>
+        <Typography variant="h6">Interests</Typography>
+        <List>
+          {interests.map((interest, index) => (
+            <ListItem key={index} divider>
+              <ListItemText>
+                <TextField
+                  fullWidth
+                  label="Interest"
+                  variant="outlined"
+                  value={interest}
+                  onChange={(e) => handleInterestChange(e, index)}
+                />
+              </ListItemText>
+              <ListItemSecondaryAction>
+                <IconButton
+                  edge="end"
+                  onClick={() => handleDeleteInterest(index)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+        <Button variant="outlined" onClick={handleAddInterest}>
+          Add Interest
+        </Button>
       </Box>
     </Box>
   );
 };
 
 export default Profile;
-
