@@ -1,10 +1,10 @@
 a {
   text-decoration: none;
 }
-a:hover {
+/* a:hover {
   display: block;
   background-color: inherit;
-}
+} */
 
 .MuiTypography-root a {
   color: azure;

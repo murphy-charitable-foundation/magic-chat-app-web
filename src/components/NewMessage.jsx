@@ -12,6 +12,7 @@ export default function NewMessage({ newMessage, sendMessage, setNewMessage }) {
         <Stack direction="row" alignItems="center">
           <TextField
             placeholder="Your Message..."
+            multiline
             value={newMessage}
             onChange={(e) => {
               setNewMessage(e.target.value);
@@ -19,7 +20,11 @@ export default function NewMessage({ newMessage, sendMessage, setNewMessage }) {
             id="new-message"
             InputProps={{
               style: {
-                borderRadius: "12px"
+                borderRadius: "12px",
+                padding: "4px 8px",
+                minHeight: "24px",
+                maxHeight: "56px",
+                overflow: "hidden"
               }
             }}
             sx={{
@@ -27,9 +32,7 @@ export default function NewMessage({ newMessage, sendMessage, setNewMessage }) {
             }}
             inputProps={{
               style: {
-                padding: "8px",
-                minHeight: "24px",
-                maxHeight: "56px",
+                overflow: "scroll"
               }
             }}
           ></TextField>

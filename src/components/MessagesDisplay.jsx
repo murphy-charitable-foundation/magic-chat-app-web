@@ -43,7 +43,7 @@ export default function MessagesDisplay({ chat = [] }) {
                   background: "#DDDDE9",
                   borderRadius: "8px",
                   width: "fit-content",
-                  padding: "4px 24px",
+                  padding: "4px 20px",
                 }}
               >
                 <Typography color="#3C3C43" fontSize="12px">

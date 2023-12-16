@@ -10,21 +10,24 @@ import SearchIcon from "@mui/icons-material/Search";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import React, { useState } from "react";
 import MessageBoard from "../components/MessageBoard"; 
+import MessagesFilters from "../components/MessagesFilters";
 
 const chatsRes = [
   {
     name: "Festus",
     imgSrc: "./images/festus.jpg",
     lastMessage: "Hey, How are you?",
-    timestamp: "12:01",
+    timestamp: "Nov 24, 2023 6:18AM",
     senderId: 1,
+    messageStatus: "under review"
   },
   {
     name: "Charlie",
     imgSrc: "./images/example-1.jpeg",
     lastMessage: "Hey, How are you?",
-    timestamp: "11:10",
+    timestamp: "Nov 24, 2023 6:18AM",
     senderId: 2,
+    messageStatus: "review complete"
   },
 ];
 
@@ -51,14 +54,17 @@ const Messages = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{
+      background: "#F6F6F6",
+    }}>
       <Stack
         sx={{
           marginBottom: "16px",
         }}
       >
-        <Typography variant="h1">Chats</Typography>
-        <TextField
+        <Typography variant="h4">Recently Received</Typography>
+        <MessagesFilters />
+        {/* <TextField
           id="outlined-basic"
           variant="standard"
           placeholder="Search"
@@ -89,7 +95,7 @@ const Messages = () => {
               </InputAdornment>
             ),
           }}
-        />
+        /> */}
       </Stack>
       {<MessageBoard messages={chats} />}
     </Box>
