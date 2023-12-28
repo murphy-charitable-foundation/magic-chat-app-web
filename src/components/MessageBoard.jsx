@@ -1,6 +1,7 @@
 import { Stack, Box, Avatar, Typography, Link } from "@mui/material";
 
 export default function MessageBoard({ messages, socket }) {
+  console.log(messages)
   return (
     <Stack
       direction="column"
@@ -11,10 +12,11 @@ export default function MessageBoard({ messages, socket }) {
       {messages?.map((chat, i) => (
         <Box key={i} sx={{ background: "#F5F5F5", padding: "8px 16px" }}>
           <Link
-            href={`/messages/${chat.senderId}`}
+            href={`/messages/${chat}`}
             sx={{ textDecoration: "none" }}
           >
-            <Stack
+            {chat}
+            {/* <Stack
               direction="row"
               justifyContent="flex-start"
               alignItems="center"
@@ -47,7 +49,7 @@ export default function MessageBoard({ messages, socket }) {
               >
                 {chat.timestamp}
               </Typography>
-            </Stack>
+            </Stack> */}
           </Link>
         </Box>
       ))}

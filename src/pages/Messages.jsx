@@ -8,25 +8,23 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import React, { useState } from "react";
-import MessageBoard from "../components/MessageBoard"; 
+import React, { useEffect, useState } from "react";
+import MessageBoard from "../components/MessageBoard";
 
-const chatsRes = [
-  {
-    name: "Festus",
-    imgSrc: "./images/festus.jpg",
-    lastMessage: "Hey, How are you?",
-    timestamp: "12:01",
-    senderId: 1,
-  },
-  {
-    name: "Charlie",
-    imgSrc: "./images/example-1.jpeg",
-    lastMessage: "Hey, How are you?",
-    timestamp: "11:10",
-    senderId: 2,
-  },
-];
+import { firestore, auth } from "../firebase";
+import {
+  collection,
+  doc,
+  getDoc,
+  query,
+  onSnapshot,
+  getDocs,
+  addDoc,
+  serverTimestamp,
+  where
+} from "firebase/firestore";
+
+const chatsRes = [];
 
 const Messages = () => {
   const [chats, setChats] = useState(chatsRes);
@@ -50,48 +48,34 @@ const Messages = () => {
     handleSearchTextChange();
   };
 
+  const [connectedChats, setConnectedChats] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const collectionRef = collection(firestore, "Child");
+        // get users email from auth
+        const q = query(collectionRef, where("email", '==', 'penpalprogram.murphycharity@gmail.com'))
+        const docRef = await getDocs(q)
+        if (!docRef.empty) {
+          const connectedChatsRef = docRef.docs[0].data()
+          connectedChatsRef?.connected_chats.forEach(chat => {
+            setConnectedChats([...connectedChats, chat])
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <Box>
-      <Stack
-        sx={{
-          marginBottom: "16px",
-        }}
-      >
+      <Stack sx={{ marginBottom: "16px" }}>
         <Typography variant="h1">Chats</Typography>
-        <TextField
-          id="outlined-basic"
-          variant="standard"
-          placeholder="Search"
-          fullWidth
-          value={searchText}
-          onChange={handleSearchTextChange}
-          InputProps={{
-            disableUnderline: true,
-            style: {
-              outline: "none",
-              borderRadius: "12px 12px 0px 0px",
-              borderBottom: "solid #000",
-            },
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconButton sx={{ pointerEvents: "none" }}>
-                  <SearchIcon sx={{ fill: "#3F4945" }} />
-                </IconButton>
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end">
-                {searchText && (
-                  <IconButton onClick={clearText}>
-                    <HighlightOffIcon />
-                  </IconButton>
-                )}
-              </InputAdornment>
-            ),
-          }}
-        />
       </Stack>
-      {<MessageBoard messages={chats} />}
+      <MessageBoard messages={connectedChats} />
     </Box>
   );
 };

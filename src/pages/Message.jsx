@@ -18,37 +18,37 @@ function Message() {
   const [newMessage, setNewMessage] = useState("");
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-    });
-    return unsubscribe;
-  });
+  // useEffect(() => {
+  //   const unsubscribe = auth.onAuthStateChanged((user) => {
+  //     setUser(user);
+  //   });
+  //   return unsubscribe;
+  // });
 
-  useEffect(() => {
-    const messageRef = collection(firestore, "letterbox");
-    const q = query(messageRef);
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const messages = snapshot.docs.map(async (doc) => {
-        const subcollectionRef = collection(doc.ref, "letters");
-        const subcollectionDocs = await getDocs(subcollectionRef);
-        const subcollectionData = subcollectionDocs.docs.map((subDoc) => ({
-          subId: subDoc.id,
-          ...subDoc.data(),
-        }));
-        return {
-          id: doc.id,
-          mainCollectionData: doc.data(),
-          subcollectionData,
-        };
-      });
-      Promise.all(messages).then((resolvedMessages) => {
-        setMessage(resolvedMessages);
-      });
-    });
+  // useEffect(() => {
+  //   const messageRef = collection(firestore, "Chat");
+  //   const q = query(messageRef);
+  //   const unsubscribe = onSnapshot(q, (snapshot) => {
+  //     const messages = snapshot.docs.map(async (doc) => {
+  //       const subcollectionRef = collection(doc.ref, "letters");
+  //       const subcollectionDocs = await getDocs(subcollectionRef);
+  //       const subcollectionData = subcollectionDocs.docs.map((subDoc) => ({
+  //         subId: subDoc.id,
+  //         ...subDoc.data(),
+  //       }));
+  //       return {
+  //         id: doc.id,
+  //         mainCollectionData: doc.data(),
+  //         subcollectionData,
+  //       };
+  //     });
+  //     Promise.all(messages).then((resolvedMessages) => {
+  //       setMessage(resolvedMessages);
+  //     });
+  //   });
   
-    return unsubscribe;
-  }, []);
+  //   return unsubscribe;
+  // }, []);
 
   const sendMessage = async (e) => {
     e.preventDefault();
