@@ -15,7 +15,7 @@ export default function MessageBoard({ messages, socket }) {
             href={`/messages/${chat}`}
             sx={{ textDecoration: "none" }}
           >
-            {chat}
+            Chat with: {chat.name.path}
             {/* <Stack
               direction="row"
               justifyContent="flex-start"

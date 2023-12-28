@@ -1,54 +1,25 @@
 import {
   Box,
-  IconButton,
-  InputAdornment,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import React, { useEffect, useState } from "react";
 import MessageBoard from "../components/MessageBoard";
 
 import { firestore, auth } from "../firebase";
 import {
   collection,
-  doc,
-  getDoc,
   query,
-  onSnapshot,
   getDocs,
-  addDoc,
-  serverTimestamp,
+  getDoc,
+  doc,
   where
 } from "firebase/firestore";
 
-const chatsRes = [];
-
 const Messages = () => {
-  const [chats, setChats] = useState(chatsRes);
-  const [searchText, setSearchText] = useState("");
-
-  const handleSearchTextChange = (event) => {
-    if (!event) {
-      setChats(chatsRes);
-      return;
-    }
-    const newText = event.target.value;
-    setSearchText(newText);
-    const filteredChats = chatsRes.filter((chat) =>
-      chat.name.toLowerCase().includes(newText.toLowerCase())
-    );
-    setChats(filteredChats);
-  };
-
-  const clearText = () => {
-    setSearchText("");
-    handleSearchTextChange();
-  };
-
   const [connectedChats, setConnectedChats] = useState([]);
+  const [childId, setChildId] = useState("");
+  const [connectedChatsObjects, setConnectedChatsObjects] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,6 +29,8 @@ const Messages = () => {
         const docRef = await getDocs(q)
         if (!docRef.empty) {
           const connectedChatsRef = docRef.docs[0].data()
+          setChildId(docRef.docs[0].id)
+          console.log("docs 0 ", docRef.docs[0])
           connectedChatsRef?.connected_chats.forEach(chat => {
             setConnectedChats([...connectedChats, chat])
           })
@@ -70,12 +43,33 @@ const Messages = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchUserData = async (chatId) => {
+      const idSplit = chatId.split("Chat/")
+      console.log(idSplit[1])
+      try { 
+        const chatCol = doc(firestore, "Chat", idSplit[1])
+        const docRef = await getDoc(chatCol);
+        if (docRef.exists()) {
+          setConnectedChatsObjects(
+            [...connectedChatsObjects, {name: docRef.data().international_buddy}]
+          )
+        }
+      } catch (error) {
+        console.error('Error fetching chat data:', error);
+      }
+    };
+    for(const chat of connectedChats){
+      fetchUserData(chat);
+    }
+  }, [childId]);
+
   return (
     <Box>
       <Stack sx={{ marginBottom: "16px" }}>
         <Typography variant="h1">Chats</Typography>
       </Stack>
-      <MessageBoard messages={connectedChats} />
+      <MessageBoard messages={connectedChatsObjects} />
     </Box>
   );
 };
