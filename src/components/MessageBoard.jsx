@@ -16,6 +16,8 @@ export default function MessageBoard({ messages, socket }) {
             sx={{ textDecoration: "none" }}
           >
             Chat with: {chat.name.path}
+            <br />
+            Last Message: {chat.lastMessage.content}
             {/* <Stack
               direction="row"
               justifyContent="flex-start"

@@ -52,7 +52,10 @@ const Messages = () => {
         const docRef = await getDoc(chatCol);
         if (docRef.exists()) {
           setConnectedChatsObjects(
-            [...connectedChatsObjects, {name: docRef.data().international_buddy}]
+            [...connectedChatsObjects, {
+              name: docRef.data().international_buddy,
+              lastMessage: docRef.data().Messages[docRef.data().Messages.length - 1]
+            }]
           )
         }
       } catch (error) {
