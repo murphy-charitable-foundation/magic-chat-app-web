@@ -11,44 +11,62 @@ import {
   getDocs,
   addDoc,
   serverTimestamp,
+  where
 } from "firebase/firestore";
 
 function Message() {
   const [message, setMessage] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [user, setUser] = useState(null);
+  const [connectedChat, setConnectedChat] = useState([]);
+  const [childId, setChildId] = useState("");
 
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged((user) => {
-  //     setUser(user);
-  //   });
-  //   return unsubscribe;
-  // });
 
-  // useEffect(() => {
-  //   const messageRef = collection(firestore, "Chat");
-  //   const q = query(messageRef);
-  //   const unsubscribe = onSnapshot(q, (snapshot) => {
-  //     const messages = snapshot.docs.map(async (doc) => {
-  //       const subcollectionRef = collection(doc.ref, "letters");
-  //       const subcollectionDocs = await getDocs(subcollectionRef);
-  //       const subcollectionData = subcollectionDocs.docs.map((subDoc) => ({
-  //         subId: subDoc.id,
-  //         ...subDoc.data(),
-  //       }));
-  //       return {
-  //         id: doc.id,
-  //         mainCollectionData: doc.data(),
-  //         subcollectionData,
-  //       };
-  //     });
-  //     Promise.all(messages).then((resolvedMessages) => {
-  //       setMessage(resolvedMessages);
-  //     });
-  //   });
-  
-  //   return unsubscribe;
-  // }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("new page")
+      try {
+        const collectionRef = collection(firestore, "Child");
+        // get users email from auth
+        const q = query(collectionRef, where("email", '==', 'penpalprogram.murphycharity@gmail.com'))
+        const docRef = await getDocs(q)
+        if (!docRef.empty) {
+          setChildId(docRef.docs[0].id)
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+      console.log(childId)
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log("new chld Id")
+    const fetchData = async () => {
+      try {
+        const collectionRef = collection(firestore, "Chat")
+        const chatBuddy = window.location.pathname.split("/messages/")[1]
+        const q = query(
+          collectionRef,
+          where("child", '==', `/Child/${childId}`),
+          where("international_buddy", '==', `/InternationalBuddy/${chatBuddy}`)
+        )
+        const docRef = await getDocs(q)
+        console.log(docRef, `/Child/${childId}`, `/InternationalBuddy/${chatBuddy}`)
+        if (!docRef.empty) {
+          console.log(docRef.docs[0].data())
+        } else {
+          console.error("Fetching chat failed")
+        }
+      } catch (e) {
+        console.error('Error fetching chat:', e);
+      }
+    }
+    fetchData();
+  }, [childId])
 
   const sendMessage = async (e) => {
     e.preventDefault();
