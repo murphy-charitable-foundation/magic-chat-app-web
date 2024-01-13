@@ -6,7 +6,7 @@ import {
 import React, { useEffect, useState } from "react";
 import MessageBoard from "../components/MessageBoard";
 
-import { firestore, auth } from "../firebase";
+import { firestore } from "../firebase";
 import {
   collection,
   query,
@@ -24,7 +24,7 @@ const Messages = () => {
     const fetchData = async () => {
       try {
         const collectionRef = collection(firestore, "Child");
-        // get users email from auth
+        // get users email from auth ===> auth.email
         const q = query(collectionRef, where("email", '==', 'penpalprogram.murphycharity@gmail.com'))
         const docRef = await getDocs(q)
         if (!docRef.empty) {

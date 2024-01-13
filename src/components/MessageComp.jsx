@@ -34,7 +34,6 @@ export default function MessageComp({ messageData, key }) {
     return (
       <Box sx={boxStyling} key={key}>
         <div>
-          {/* <p>Sent by: {messageData.subcollectionData[0]?.sentby}</p> */}
           <p>{messageData.content}</p>
         </div>
       </Box>

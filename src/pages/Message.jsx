@@ -1,4 +1,4 @@
-import { Avatar, Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import MessagesComp from "../components/MessagesComp";
 import NewMessage from "../components/NewMessage";
@@ -8,9 +8,7 @@ import {
   collection,
   query,
   getDocs,
-  addDoc,
   doc,
-  serverTimestamp,
   updateDoc,
   where
 } from "firebase/firestore";
@@ -20,7 +18,6 @@ function Message() {
   const [newMessage, setNewMessage] = useState("");
   const [user, setUser] = useState(null);
   const [childId, setChildId] = useState(null);
-  const [internationalBuddyRef, setInternationalBuddyRef] = useState(null);
   const [childRef, setChildRef] = useState(null)
   const [messageDocRef, setMessageDocRef] = useState(null)
 
@@ -63,7 +60,6 @@ function Message() {
         const chatBuddy = window.location.pathname.split("/messages/")[1];
         const intlBuddyRef = doc(collection(firestore, 'InternationalBuddy'), chatBuddy);
         const childReference = doc(collection(firestore, 'Child'), childId);
-        setInternationalBuddyRef(intlBuddyRef);
         setChildRef(childReference);
 
         const q = query(

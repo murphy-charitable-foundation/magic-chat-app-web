@@ -3,9 +3,6 @@ import React from "react";
 import MessageComp from "./MessageComp";
 
 export default function MessagesComp({ chat = [] }) {
-  const filteredChat = chat
-  // const orderedChat = filteredChat.sort((a, b) => a.time.seconds - b.time.seconds)
-  const orderedChat = filteredChat
   return (
     <div>
       <Box>
@@ -17,7 +14,7 @@ export default function MessagesComp({ chat = [] }) {
           overflow="scroll"
           justifyContent="end"
         >
-          {orderedChat.map((message) => (
+          {chat.map((message) => (
             <MessageComp messageData={message} key={message.id} />
           ))}
         </Stack>

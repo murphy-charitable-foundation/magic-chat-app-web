@@ -1,7 +1,6 @@
-import { Stack, Box, Avatar, Typography, Link } from "@mui/material";
+import { Stack, Box, Link } from "@mui/material";
 
 export default function MessageBoard({ messages, socket }) {
-  console.log(messages)
   return (
     <Stack
       direction="column"
