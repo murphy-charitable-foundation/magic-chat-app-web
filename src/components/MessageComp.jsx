@@ -28,11 +28,11 @@ const styling = {
     }
 }
 
-export default function MessageComp({ messageData }) {
+export default function MessageComp({ messageData, key }) {
   const boxStyling = styling[messageData.messageType ?? "default"]
   if (messageData.content) {
     return (
-      <Box sx={boxStyling}>
+      <Box sx={boxStyling} key={key}>
         <div>
           {/* <p>Sent by: {messageData.subcollectionData[0]?.sentby}</p> */}
           <p>{messageData.content}</p>
