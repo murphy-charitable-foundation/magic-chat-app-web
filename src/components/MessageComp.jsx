@@ -30,13 +30,12 @@ const styling = {
 
 export default function MessageComp({ messageData }) {
   const boxStyling = styling[messageData.messageType ?? "default"]
-  if (messageData.subcollectionData && messageData.subcollectionData.length > 0) {
+  if (messageData.content) {
     return (
       <Box sx={boxStyling}>
         <div>
           {/* <p>Sent by: {messageData.subcollectionData[0]?.sentby}</p> */}
-          <p>{messageData.subcollectionData[0]?.letter}</p>
-          <p>{JSON.stringify(messageData.subcollectionData[0]?.time)}</p>
+          <p>{messageData.content}</p>
         </div>
       </Box>
     );

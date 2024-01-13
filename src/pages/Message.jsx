@@ -10,6 +10,7 @@ import {
   onSnapshot,
   getDocs,
   addDoc,
+  doc,
   serverTimestamp,
   where
 } from "firebase/firestore";
@@ -21,6 +22,12 @@ function Message() {
   const [connectedChat, setConnectedChat] = useState([]);
   const [childId, setChildId] = useState("");
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return unsubscribe;
+  });
 
 
   useEffect(() => {
@@ -44,20 +51,23 @@ function Message() {
   }, []);
 
   useEffect(() => {
-    console.log("new chld Id")
+    if(!childId) return
     const fetchData = async () => {
       try {
         const collectionRef = collection(firestore, "Chat")
         const chatBuddy = window.location.pathname.split("/messages/")[1]
+        const internationalBuddyRef = doc(collection(firestore, 'InternationalBuddy'), chatBuddy);
+        const childRef = doc(collection(firestore, 'Child'), childId);
         const q = query(
           collectionRef,
-          where("child", '==', `/Child/${childId}`),
-          where("international_buddy", '==', `/InternationalBuddy/${chatBuddy}`)
-        )
+          where("child", '==', childRef),
+          where("international_buddy", '==',internationalBuddyRef)
+          )
         const docRef = await getDocs(q)
-        console.log(docRef, `/Child/${childId}`, `/InternationalBuddy/${chatBuddy}`)
+        
         if (!docRef.empty) {
-          console.log(docRef.docs[0].data())
+          setMessage(docRef.docs[0].data().Messages)
+          // console.log(docRef.docs[0].data())
         } else {
           console.error("Fetching chat failed")
         }
