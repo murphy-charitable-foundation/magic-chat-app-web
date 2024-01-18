@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import React from "react";
+import { auth } from "../firebase";
 
 const styling = {
     "sender": {
@@ -29,7 +30,13 @@ const styling = {
 }
 
 export default function MessageComp({ messageData, key }) {
-  const boxStyling = styling[messageData.messageType ?? "default"]
+  // use auth to determine if user is a child or international buddy
+  let userType = "default";
+  if(messageData.sender && messageData.sender.path){
+    userType = messageData.sender.path.includes("Child") ? "sender" : "receiver"
+  }
+  console.log(messageData)
+  const boxStyling = styling[userType]
   if (messageData.content) {
     return (
       <Box sx={boxStyling} key={key}>
