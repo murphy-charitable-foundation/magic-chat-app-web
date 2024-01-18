@@ -17,6 +17,8 @@ export default function MessageBoard({ messages, socket }) {
             Chat with: {chat.name.path}
             <br />
             Last Message: {chat.lastMessage.content}
+            <br />
+            Sent at: {chat.lastMessage.created_at}
           </Link>
         </Box>
       ))}
