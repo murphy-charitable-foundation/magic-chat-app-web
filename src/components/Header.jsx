@@ -71,7 +71,7 @@ const Header = () => {
             <CardMedia
               sx={{ width: "100px", m: "2px auto" }}
               component="img"
-              image="./logo.png"
+              image="../logo.png"
             />
             {/* <MenuIcon /> */}
           </IconButton>
