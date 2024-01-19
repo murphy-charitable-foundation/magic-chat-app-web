@@ -1,6 +1,6 @@
 import { Stack, Box, Link } from "@mui/material";
 
-export default function MessageBoard({ messages, socket }) {
+export default function MessageBoard({ messages }) {
   return (
     <Stack
       direction="column"
