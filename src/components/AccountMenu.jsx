@@ -66,11 +66,13 @@ export default function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
-            <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+            <Avatar sx={{ width: 32, height: 32 }}>
+              <Link to="/profile">J</Link>
+            </Avatar>
           </IconButton>
         </Tooltip>
       </Box>
-      <Menu
+      {/* <Menu
         anchorEl={anchorEl}
         id="account-menu"
         open={open}
@@ -105,9 +107,7 @@ export default function AccountMenu() {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        {/* <MenuItem onClick={handleClose}>
-          <Avatar /> Profile
-        </MenuItem> */}
+        
         <MenuItem onClick={handleClose}>
           <Avatar /> <Link to="/profile">My Account</Link>
         </MenuItem>
@@ -132,7 +132,7 @@ export default function AccountMenu() {
             Logout
           </Button>
         </MenuItem>
-      </Menu>
+      </Menu> */}
     </React.Fragment>
   );
 }
