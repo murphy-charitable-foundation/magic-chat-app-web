@@ -5,14 +5,12 @@ import MessageComp from "./MessageComp";
 export default function MessagesComp({ chat = [] }) {
   return (
     <div>
-      <Box>
+      <Box overflow="auto" minHeight="40vh" maxHeight="40vh">
         <Stack
-          direction="column"
+          flexDirection="column"
           spacing={2}
-          minHeight="40vh"
-          maxHeight="40vh"
+          minHeight="100%"
           overflow="scroll"
-          justifyContent="end"
         >
           {chat.map((message) => (
             <MessageComp messageData={message} key={message.id} />
