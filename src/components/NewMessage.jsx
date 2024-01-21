@@ -1,5 +1,7 @@
+import { FileUpload } from "@mui/icons-material";
 import { Button, Stack, TextField } from "@mui/material";
 import React from "react";
+import FileUploader from "./FileUpload";
 
 export default function NewMessage({ newMessage, sendMessage, setNewMessage }) {
   return (
@@ -16,6 +18,7 @@ export default function NewMessage({ newMessage, sendMessage, setNewMessage }) {
             flex: 1,
           }}
         ></TextField>
+        <FileUploader />
         <Button type="submit">Send</Button>
       </form>
     </Stack>
