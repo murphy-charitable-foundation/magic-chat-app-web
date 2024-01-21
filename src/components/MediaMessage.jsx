@@ -29,6 +29,10 @@ const styling = {
     }
 }
 
+const configureStorageURL = (string) => (
+    `https://firebasestorage.googleapis.com/v0/b/penpalmagicapp.appspot.com/o/${string}?alt=media&token=c0135b73-167c-4e33-9e67-8afea41f983c`
+)
+
 export default function MediaMessage({ messageData, key }) {
   // use auth to determine if user is a child or international buddy
   let userType = "default";
@@ -39,8 +43,8 @@ export default function MediaMessage({ messageData, key }) {
   const boxStyling = styling[userType]
   if (messageData.content) {
     return (
-      <Box sx={boxStyling} key={key}>
-        <img src={messageData.content} />
+      <Box sx={boxStyling} key={key} maxWidth="min(80%, 400px)" display="flex" justifyContent="center" alignItems="center">
+        <img src={configureStorageURL(messageData.content)} style={{maxWidth: "80%"}} />
       </Box>
     );
   } else {
