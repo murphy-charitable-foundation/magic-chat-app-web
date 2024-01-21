@@ -1,6 +1,8 @@
 import { Box, Stack } from "@mui/material";
 import React from "react";
 import MessageComp from "./MessageComp";
+import TextMessage from "./TextMessage";
+import MediaMessage from "./MediaMessage";
 
 export default function MessagesComp({ chat = [] }) {
   return (
@@ -13,7 +15,11 @@ export default function MessagesComp({ chat = [] }) {
           overflow="scroll"
         >
           {chat.map((message) => (
-            <MessageComp messageData={message} key={message.id} />
+            message.content_type === "text" ? (
+              <TextMessage messageData={message} key={message.id} />
+            ) : message.content_type === "media" ? (
+              <MediaMessage messageData={message} key={message.id} />
+            ) : null
           ))}
         </Stack>
       </Box>
