@@ -1,6 +1,5 @@
 import { Box, Stack } from "@mui/material";
 import React from "react";
-import MessageComp from "./MessageComp";
 import TextMessage from "./TextMessage";
 import MediaMessage from "./MediaMessage";
 
