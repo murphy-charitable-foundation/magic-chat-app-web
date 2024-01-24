@@ -33,21 +33,22 @@ function Message() {
     const fetchData = async () => {
       console.log("new page")
       try {
-        const collectionRef = collection(firestore, "Child");
+        // const collectionRef = collection(firestore, "Child");
         // get users email from =====>>>>> user.email
-        const q = query(collectionRef, where("email", '==', 'penpalprogram.murphycharity@gmail.com'))
-        const docRef = await getDocs(q)
-        console.log(docRef);
-        if (!docRef.empty) {
-          setChildId(docRef.docs[0].id)
-        }
+        // const q = query(collectionRef, where("email", '==', 'penpalprogram.murphycharity@gmail.com'))
+        // const docRef = await getDocs(q)
+        // if (!docRef.empty) {
+        //   setChildId(docRef.docs[0].id)
+        // }
       } catch (error) {
-        console.error('Error fetching user:', error);
+        // console.error('Error fetching user:', error);
       }
     };
 
     fetchData();
   }, []);
+
+
 
   useEffect(() => {
     console.log("new id", childId)

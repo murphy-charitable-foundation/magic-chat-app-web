@@ -11,8 +11,6 @@ import {
   collection,
   query,
   getDocs,
-  getDoc,
-  doc,
   where
 } from "firebase/firestore";
 
@@ -48,16 +46,33 @@ const Messages = () => {
       const idSplit = chatId.split("Chat/")
       console.log(idSplit[1])
       try { 
-        const chatCol = doc(firestore, "Chat", idSplit[1])
-        const docRef = await getDoc(chatCol);
-        if (docRef.exists()) {
-          setConnectedChatsObjects(
-            [...connectedChatsObjects, {
-              name: docRef.data().international_buddy,
-              lastMessage: docRef.data().Messages[docRef.data().Messages.length - 1]
-            }]
-          )
+
+        const collectionRef = collection(firestore, "letterbox")
+        // member needs to be a reference to the user itself not just a string
+        const memberId = '/users/c1WEgNP6oGNAPQr51cX8SeS5tln1'
+        const q = query(collectionRef, where("members", "array-contains", memberId));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach(async (doc) => {
+            const letterboxDoc = doc.data();
+            const letterboxId = doc.id;
+            const lettersCollectionRef = collection(doc.ref, "letters");
+            const lettersQuerySnapshot = await getDocs(lettersCollectionRef);
+        
+            if (!lettersQuerySnapshot.empty) {
+              const messages = [];
+              lettersQuerySnapshot.forEach((letterDoc) => {
+                messages.push(letterDoc.data());
+              });
+              console.log("letterbox:", letterboxDoc);
+              console.log("letterboxId:", letterboxId);
+              console.log("Messages:", messages);
+            }
+          });
         }
+
+
       } catch (error) {
         console.error('Error fetching chat data:', error);
       }
