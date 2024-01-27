@@ -50,13 +50,39 @@ const Messages = () => {
         const querySnapshot = await getDocs(letterboxQuery);
         console.log(querySnapshot)
         const letterboxes = [];
-        querySnapshot.forEach((doc) => {
+        for (const doc of querySnapshot.docs) {
           const letterboxData = doc.data();
           letterboxes.push({
             id: doc.id,
             data: letterboxData,
-          });
         });
+
+          // const lettersCollectionRef = query(collection(doc.ref, "letters"), doc.id);
+          // console.log("letter ref", lettersCollectionRef)
+          // const lettersQuerySnapshot = await getDocs(lettersCollectionRef);
+
+        const lettersCollectionRef = collection(doc.ref, "letters");
+        console.log("ref", lettersCollectionRef)
+        const lettersQuerySnapshot = await getDocs(lettersCollectionRef);
+        console.log("snapshot", lettersQuerySnapshot)
+        if (!lettersQuerySnapshot.empty) {
+          const messages = [];
+          lettersQuerySnapshot.forEach((letterDoc) => {
+            messages.push(letterDoc.data());
+          });
+          console.log("Messages for Letterbox", doc.id, ":", messages);
+        }
+
+
+          console.log("snapshot", lettersQuerySnapshot)
+          if (!lettersQuerySnapshot.empty) {
+            const messages = [];
+            lettersQuerySnapshot.forEach((letterDoc) => {
+              messages.push(letterDoc.data());
+            });
+            console.log("Messages:", messages);
+          }
+        };
         console.log(letterboxes)
 
 
