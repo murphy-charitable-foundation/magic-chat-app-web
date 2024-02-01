@@ -12,15 +12,13 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom/dist";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-
+//import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Footer from "../components/Footer";
 import GuestHeader from "../components/HeaderGuest";
 
 import { auth } from '../firebase'
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
-
-
 
 
 
@@ -59,34 +57,44 @@ const Login = () => {
   return (
     <>
       <GuestHeader />
-      <Container component="main" maxWidth="xs">
-        <button onClick={signInWithGoogle}>Sign In With Google</button>
+      <Container component="main" width='1280px' height='650px' marginTop='0px' marginLeft='0px'>
+      <Box
+        sx={{marginTop:'0px',
+        marginLeft:'0px', 
+        display:"flex" ,
+        flexDirection:"row" ,
+        alignItems:"left",
+      }}
+      >      
         <Box
           sx={{
-            marginTop: 3,
+            marginTop: '149px',
+            marginLeft:'150px',
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
+            alignItems: "left",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
+          <Avatar sx={{ m: 1, bgcolor: "green" }}>
+            <AccountCircleIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
+
           <Box
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: 1 }}
+            sx={{ mt: 1, width:'329px',height:'56px',top:'221px',left:'150px'}}
           >
+         
             <TextField
               margin="normal"
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="Email address"
               name="email"
               autoComplete="email"
               autoFocus
@@ -105,6 +113,15 @@ const Login = () => {
               control={<Checkbox value="remember" color="primary" />}
               label="Keep me signed in"
             />
+
+            <Grid container item marginTop={2}>
+              <Grid item xs>
+                <Link to="/reset-password" variant="body2">
+                  Forgot your password?
+                </Link>
+              </Grid>
+            </Grid>
+
             <Button
               type="submit"
               fullWidth
@@ -114,28 +131,39 @@ const Login = () => {
                   textTransform: "lowercase",
                   mt: 3,
                   mb: 2,
+                  
                 },
+
               }}
             >
-              Login
+              ENTER
             </Button>
-            <Grid container item marginTop={2}>
-              <Grid item xs>
-                <Link to="/reset-password" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
+
+        <Box
+          sx={{
+            marginTop: 0,
+            marginLeft:'240px',
+
+          }}
+
+        >
+         <div className="App"> 
+            <img src="./images/mask.png" alt="mask"  height={650} width={630}/> 
+         </div>
+
+        </Box>
+      </Box>
+
       </Container>
       <hr
         style={{
-          width: "75%",
+          width: "80%",
           marginLeft: "auto",
           marginRight: "auto",
-          marginTop: 10,
-          boxShadow: "4px",
+          marginTop: 30,
+          boxShadow: "6px",
         }}
       />
       <Footer />
