@@ -16,9 +16,25 @@ const Footer = () => {
 
   return (
     <Box
-      sx={{ maxWidth: 900, marginX: "auto", marginTop: 3 }}
-      alignContent="center"
-    >
+     sx={{//marginTop:'0px',
+     marginLeft:'0px', 
+     display:"flex" ,
+     flexDirection:"row" ,
+     alignItems:"left",
+     maxWidth: '1280px', 
+     //marginX: "auto", 
+     marginTop: 1 
+     }}
+    >    
+     <Box
+      sx={{ maxWidth: '1000px', 
+      //marginX: "auto", 
+      marginLeft:'300px',
+      marginTop: 2,
+
+    }}
+      alignContent="left"
+     >
       <BottomNavigation
         showLabels
         value={value}
@@ -42,8 +58,11 @@ const Footer = () => {
         <BottomNavigationAction label="Contact" icon={<CallIcon />} />
         <BottomNavigationAction label="About" icon={<QuestionMarkIcon />} />
       </BottomNavigation>
-      <Box textAlign="center">
-        <Typography marginTop={2}>
+
+
+     </Box>
+     <Box textAlign="right" marginLeft='450px'>
+        <Typography marginTop={4}>
           &copy; {new Date().getFullYear()} - {title}
         </Typography>
       </Box>
