@@ -14,10 +14,11 @@ import React from "react";
 
 const GuestHeader = () => {
   // const [isLoggedIn, setIsloggedIn] = useState(false);
-
+  
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, width:'1280',height:'68px'}}>
       <AppBar position="static">
+        
         <Toolbar>
           <IconButton
             size="large"
@@ -27,9 +28,10 @@ const GuestHeader = () => {
             sx={{ mr: 2 }}
           >
             <CardMedia
-              sx={{ width: "100px", m: "2px auto" }}
+              sx={{ width: "307px", height:"34px",top:"17px",left:"50px",m: "2px auto"}}
               component="img"
-              image="./logo.png"
+              image="./Logo-propuesta 1.png"
+
             />
             {/* <MenuIcon /> */}
           </IconButton>
@@ -37,9 +39,10 @@ const GuestHeader = () => {
             variant="h6"
             noWrap
             component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            sx={{flexGrow: 1
+           }}
           >
-            PEN PAL - Murphy Foundation
+            
           </Typography>
 
           {/* <Search>
