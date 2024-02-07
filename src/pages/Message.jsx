@@ -10,14 +10,14 @@ import {
   getDocs,
   doc,
   updateDoc,
-  where
+  where,
+  getDoc
 } from "firebase/firestore";
 
 function Message() {
   const [message, setMessage] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [user, setUser] = useState(null);
-  const [childId, setChildId] = useState(null);
   const [childRef, setChildRef] = useState(null)
   const [messageDocRef, setMessageDocRef] = useState(null)
 
@@ -28,108 +28,132 @@ function Message() {
     return unsubscribe;
   });
 
-
   useEffect(() => {
-    const fetchData = async () => {
-      console.log("new page")
-      try {
-        // const collectionRef = collection(firestore, "Child");
-        // get users email from =====>>>>> user.email
-        // const q = query(collectionRef, where("email", '==', 'penpalprogram.murphycharity@gmail.com'))
-        // const docRef = await getDocs(q)
-        // if (!docRef.empty) {
-        //   setChildId(docRef.docs[0].id)
-        // }
-      } catch (error) {
-        // console.error('Error fetching user:', error);
-      }
-    };
-
-    fetchData();
+    getSubcollectionData();
   }, []);
 
+  const collectionName = "letterbox"; // Replace "letterbox" with the actual collection name
+  const splitUrl = window.location.href.split("/")
+  const documentId = splitUrl[splitUrl.length - 1]; // Replace "documentIdFromParams" with the actual document ID from URL parameters
 
+  const getSubcollectionData = async () => {
+    try {
+      const documentRef = doc(collection(firestore, collectionName), documentId);
+      console.log(0)
+      // errors for permissions here
+      const documentSnapshot = await getDoc(documentRef);
+      console.group(1)
+      if (documentSnapshot.exists()) {
+        const subcollectionRef = collection(documentRef, "letters");
+        const subcollectionSnapshot = await getDocs(subcollectionRef);
+        console.group(2)
+        const messages = [];
 
-  useEffect(() => {
-    console.log("new id", childId)
-    let isMounted = true;
+        subcollectionSnapshot.forEach((subDoc) => {
+          const letter = subDoc.data();
+          messages.push({
+            collectionId: subDoc.id,
+            receiver: letter.members.filter(member => member !== auth.currentUser.uid),
+            content: letter.content,
+            deleted: letter.deleted_at,
+            moderation: letter.moderation
+          });
+        });
 
-    if (!childId) return
-    const fetchData = async () => {
-      try {
-        const collectionRef = collection(firestore, "Chat");
-        const chatBuddy = window.location.pathname.split("/messages/")[1];
-        const intlBuddyRef = doc(collection(firestore, 'InternationalBuddy'), chatBuddy);
-        const childReference = doc(collection(firestore, 'Child'), childId);
-        setChildRef(childReference);
-
-        const q = query(
-          collectionRef,
-          where("child", '==', childReference),
-          where("international_buddy", '==', intlBuddyRef)
-        );
-
-        const docSnapshot = await getDocs(q);
-
-        if (isMounted) {
-          setMessageDocRef(docSnapshot);
-
-          if (!docSnapshot.empty) {
-            setMessage(docSnapshot.docs[0].data().Messages);
-          }
-        }
-      } catch (e) {
-        console.error('Error fetching chat:', e);
+        console.log(messages);
+        return messages;
+      } else {
+        console.log("Document does not exist");
+        return [];
       }
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [childId]);
-
-const sendMessage = async (e) => {
-  e.preventDefault();
-
-  if (!newMessage.trim()) return;
-
-  const newMessagePayload = {
-    deleted_at: null,
-    content: newMessage.trim(),
-    moderated_at: null,
-    content_type: "text",
-    sender: childRef,
+    } catch (error) {
+      console.error("Error fetching subcollection data:", error);
+      return [];
+    }
   };
 
-  const updatedMessages = [...message, newMessagePayload];
 
-  await updateDoc(messageDocRef.docs[0].ref, { Messages: updatedMessages });
 
-  setMessage(updatedMessages);
+  // useEffect(() => {
+  //   console.log("new id", childId)
+  //   let isMounted = true;
 
-  setNewMessage("");
-};
-return (
-  <Box>
-    <Stack direction="row" sx={{ alignItems: "center" }}>
-    </Stack>
-    <Typography variant="paragragh" paddingX={2} marginX={2}>
-      <hr />
-    </Typography>
-    <div>
-      {user ? (
-        <div>
-          <MessagesComp chat={message} />
-          <NewMessage setNewMessage={setNewMessage} sendMessage={sendMessage} newMessage={newMessage} />
-        </div>
-      ) : (
-        <div>not logged in</div>
-      )}
-    </div>
-  </Box>
-);
+  //   if (!childId) return
+  //   const fetchData = async () => {
+  //     try {
+  //       const collectionRef = collection(firestore, "Chat");
+  //       const chatBuddy = window.location.pathname.split("/messages/")[1];
+  //       const intlBuddyRef = doc(collection(firestore, 'InternationalBuddy'), chatBuddy);
+  //       const childReference = doc(collection(firestore, 'Child'), childId);
+  //       setChildRef(childReference);
+
+  //       const q = query(
+  //         collectionRef,
+  //         where("child", '==', childReference),
+  //         where("international_buddy", '==', intlBuddyRef)
+  //       );
+
+  //       const docSnapshot = await getDocs(q);
+
+  //       if (isMounted) {
+  //         setMessageDocRef(docSnapshot);
+
+  //         if (!docSnapshot.empty) {
+  //           setMessage(docSnapshot.docs[0].data().Messages);
+  //         }
+  //       }
+  //     } catch (e) {
+  //       console.error('Error fetching chat:', e);
+  //     }
+  //   };
+
+  //   fetchData();
+
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, [childId]);
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+
+    if (!newMessage.trim()) return;
+
+    const newMessagePayload = {
+      deleted_at: null,
+      content: newMessage.trim(),
+      moderated_at: null,
+      content_type: "text",
+      sender: childRef,
+    };
+
+    const updatedMessages = [...message, newMessagePayload];
+
+    await updateDoc(messageDocRef.docs[0].ref, { Messages: updatedMessages });
+
+    setMessage(updatedMessages);
+
+    setNewMessage("");
+  };
+  return (
+    <Box>
+      <Stack direction="row" sx={{ alignItems: "center" }}>
+      </Stack>
+      <Typography variant="paragragh" paddingX={2} marginX={2}>
+        <hr />
+      </Typography>
+      <div>
+        {user ? (
+          <div>
+            <MessagesComp chat={message} />
+            <NewMessage setNewMessage={setNewMessage} sendMessage={sendMessage} newMessage={newMessage} />
+          </div>
+        ) : (
+          <div>not logged in</div>
+        )}
+      </div>
+    </Box>
+  );
 }
 
 export default Message;
