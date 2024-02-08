@@ -8,15 +8,21 @@ import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
-
 import Layout from "./components/Layout.jsx";
 import ChangePassword from "./pages/ChangePassword";
 import GuestLayout from "./components/LayoutGuest.jsx";
 import Messages from "./pages/Messages";
 import AccountSetting from "./pages/AccountSetting";
+import MessageView from './pages/MessageView';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const theme = createTheme({
+  // You can customize your theme here
+});
 
 function App() {
   return (
+    <ThemeProvider theme={theme}>
     <BrowserRouter>
       {/* <Container maxWidth="900" sx={{ marginTop: 2, paddingX: 3, paddingY: 3 }}>
         <Paper elevation={3} sx={{ minHeight: 400 }}> */}
@@ -32,7 +38,8 @@ function App() {
           <Route path="/messages" element={<Messages />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/account-setting" element={<AccountSetting />} />
-        </Route>
+          <Route path="/message-view" element={<MessageView />} />
+          </Route>
         <Route path="" element={<GuestLayout />}>
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -41,6 +48,7 @@ function App() {
       {/* </Paper>
       </Container> */}
     </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

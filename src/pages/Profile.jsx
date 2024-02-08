@@ -1,201 +1,170 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
   Avatar,
   Button,
   TextField,
-  Paper,
+  IconButton,
   List,
   ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
+  ListItemIcon,
   Divider,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Select from "react-select";
+} from '@mui/material';
+import {
+  Message as MessageIcon,
+  Search as SearchIcon,
+  Cake as CakeIcon,
+  LocationOn as LocationIcon,
+  School as SchoolIcon,
+  Palette as PaletteIcon,
+  Pets as PetsIcon,
+  Home as HomeIcon,
+  MusicNote as MusicNoteIcon,
+  AirplanemodeActive as AirplaneIcon,
+  Person as PersonIcon,
+  ChildCare as ChildCareIcon,
+} from '@mui/icons-material';
+
 const Profile = () => {
-  console.log("Rendering Profile component");
   const [userDetails, setUserDetails] = useState({
-    uniqueDocumentId: "123456789",
-    photo: "./user-avatar.jpg",
-    email: "user@example.com",
-    firstName: "John",
-    lastName: "Doe",
-    bio: "Your bio goes here",
-    gender: "Prefer not to say",
-    country: null,
-    profession: "Developer",
-    favoriteAnimal: "Dog",
-    hobby: "Reading",
-    lastOnline: "10 minutes ago",
+    photo: 'path_to_photo.jpg',
+    fullName: 'Yohann Edwards',
+    birthday: '2011-11-24',
+    location: 'Village, Country',
+    gender: 'Male',
+    educationLevel: 'Grade 6',
+    isOrphan: 'No',
+    livesWith: 'Parents',
+    dreamJob: 'Airplane pilot',
+    hobby: 'Music',
+    favoriteColor: 'Blue',
+    favoriteAnimal: 'Cat',
+    bio: 'Your bio goes here',
   });
-  const [interests, setInterests] = useState([
-    "Interest 1",
-    "Interest 2",
-    "Interest 3",
-  ]);
-  const [countryOptions, setCountryOptions] = useState([]);
-  useEffect(() => {
-    fetch("https://restcountries.com/v3.1/all")
-      .then((response) => response.json())
-      .then((data) => {
-        const options = data.map((country) => ({
-          value: country.name.common,
-          label: (
-            <div>
-              <img
-                src={country.flags.png}
-                alt={`${country.name.common} flag`}
-                style={{ width: "24px", marginRight: "8px" }}
-              />
-              {country.name.common}
-            </div>
-          ),
-        }));
-        setCountryOptions(options);
-      });
-  }, []);
-  const handleBioChange = (event) => {
-    setUserDetails({ ...userDetails, bio: event.target.value });
-  };
-  const handleInputChange = (event, field) => {
+
+  // Handlers for each input change
+  const handleTextFieldChange = (field) => (event) => {
     setUserDetails({ ...userDetails, [field]: event.target.value });
   };
-  const handleCountryChange = (selectedOption) => {
-    setUserDetails({ ...userDetails, country: selectedOption });
-  };
-  const handleInterestChange = (event, index) => {
-    const updatedInterests = [...interests];
-    updatedInterests[index] = event.target.value;
-    setInterests(updatedInterests);
-  };
-  const handleAddInterest = () => {
-    setInterests([...interests, "New Interest"]);
-  };
-  const handleDeleteInterest = (index) => {
-    setInterests(interests.filter((_, i) => i !== index));
-  };
+
   return (
-    <Box padding={2}>
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        mb={2}
-      >
-        <Typography variant="h5">
-          Welcome back, {userDetails.firstName}!
-        </Typography>
-        <Avatar alt={userDetails.firstName} src={userDetails.photo} />
+    <Box padding={2} sx={{ maxWidth: 360, margin: 'auto' }}>
+      <Box display="flex" justifyContent="center" alignItems="center">
+        <Avatar alt="User" src={userDetails.photo} sx={{ width: 100, height: 100 }} />
+      </Box>
+      <Box display="flex" justifyContent="space-between" my={2}>
+        <Button startIcon={<MessageIcon />}>Message</Button>
+        <Button startIcon={<SearchIcon />}>Search</Button>
       </Box>
       <Divider />
-      {/* User Details Section */}
-      <Box mt={2}>
-        <Typography variant="h6">User Details</Typography>
+      <List>
+        {/* Personal Information */}
+        <ListItem>
+          <ListItemIcon><PersonIcon /></ListItemIcon>
+          <TextField
+            fullWidth
+            label="Full name"
+            value={userDetails.fullName}
+            onChange={handleTextFieldChange('fullName')}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon><CakeIcon /></ListItemIcon>
+          <TextField
+            fullWidth
+            type="date"
+            label="Birthday"
+            value={userDetails.birthday}
+            onChange={handleTextFieldChange('birthday')}
+            InputLabelProps={{ shrink: true }}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon><LocationIcon /></ListItemIcon>
+          <TextField
+            fullWidth
+            label="Location"
+            value={userDetails.location}
+            onChange={handleTextFieldChange('location')}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon><SchoolIcon /></ListItemIcon>
+          <TextField
+            fullWidth
+            label="Education Level"
+            value={userDetails.educationLevel}
+            onChange={handleTextFieldChange('educationLevel')}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon><HomeIcon /></ListItemIcon>
+          <TextField
+            fullWidth
+            label="Lives With"
+            value={userDetails.livesWith}
+            onChange={handleTextFieldChange('livesWith')}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon><ChildCareIcon /></ListItemIcon>
+          <TextField
+            fullWidth
+            label="Is Orphan"
+            value={userDetails.isOrphan}
+            onChange={handleTextFieldChange('isOrphan')}
+          />
+        </ListItem>
+        {/* Interests */}
+        <ListItem>
+        <ListItemIcon><AirplaneIcon /></ListItemIcon>
         <TextField
           fullWidth
-          label="Email"
-          variant="outlined"
-          value={userDetails.email}
-          onChange={(e) => handleInputChange(e, "email")}
-          margin="normal"
+          label="Dream Job"
+          value={userDetails.dreamJob}
+          onChange={handleTextFieldChange('dreamJob')}
         />
-        <TextField
-          fullWidth
-          label="First Name"
-          variant="outlined"
-          value={userDetails.firstName}
-          onChange={(e) => handleInputChange(e, "firstName")}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Last Name"
-          variant="outlined"
-          value={userDetails.lastName}
-          onChange={(e) => handleInputChange(e, "lastName")}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Profession"
-          variant="outlined"
-          value={userDetails.profession}
-          onChange={(e) => handleInputChange(e, "profession")}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Favorite Animal"
-          variant="outlined"
-          value={userDetails.favoriteAnimal}
-          onChange={(e) => handleInputChange(e, "favoriteAnimal")}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Hobby"
-          variant="outlined"
-          value={userDetails.hobby}
-          onChange={(e) => handleInputChange(e, "hobby")}
-          margin="normal"
-        />
-        <Typography paragraph>Last Online: {userDetails.lastOnline}</Typography>
-        <Select
-          options={countryOptions}
-          value={userDetails.country}
-          onChange={handleCountryChange}
-          isSearchable
-          placeholder="Select a country..."
-          styles={{ container: (base) => ({ ...base, marginTop: 8 }) }}
-        />
-      </Box>
-      {/* Bio Section */}
-      <Box mt={2}>
-        <Typography variant="h6">Bio</Typography>
-        <TextField
-          fullWidth
-          multiline
-          rows={4}
-          label="Bio"
-          variant="outlined"
-          value={userDetails.bio}
-          onChange={handleBioChange}
-          margin="normal"
-        />
-      </Box>
-      {/* Interests Section */}
-      <Box mt={2}>
-        <Typography variant="h6">Interests</Typography>
-        <List>
-          {interests.map((interest, index) => (
-            <ListItem key={index} divider>
-              <ListItemText>
-                <TextField
-                  fullWidth
-                  label="Interest"
-                  variant="outlined"
-                  value={interest}
-                  onChange={(e) => handleInterestChange(e, index)}
-                />
-              </ListItemText>
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={() => handleDeleteInterest(index)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
-        <Button variant="outlined" onClick={handleAddInterest}>
-          Add Interest
-        </Button>
-      </Box>
+        </ListItem>
+        <ListItem>
+          <ListItemIcon><MusicNoteIcon /></ListItemIcon>
+          <TextField
+            fullWidth
+            label="Hobby"
+            value={userDetails.hobby}
+            onChange={handleTextFieldChange('hobby')}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon><PaletteIcon /></ListItemIcon>
+          <TextField
+            fullWidth
+            label="Favorite Color"
+            value={userDetails.favoriteColor}
+            onChange={handleTextFieldChange('favoriteColor')}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon><PetsIcon /></ListItemIcon>
+          <TextField
+            fullWidth
+            label="Favorite Animal"
+            value={userDetails.favoriteAnimal}
+            onChange={handleTextFieldChange('favoriteAnimal')}
+          />
+        </ListItem>
+        {/* Bio */}
+        <ListItem>
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            label="Bio"
+            value={userDetails.bio}
+            onChange={handleTextFieldChange('bio')}
+          />
+        </ListItem>
+      </List>
     </Box>
   );
 };

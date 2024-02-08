@@ -36,6 +36,7 @@ export default function AccountMenu() {
     // redirect
     navigate("/");
   };
+  
   return (
     <React.Fragment>
       <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
