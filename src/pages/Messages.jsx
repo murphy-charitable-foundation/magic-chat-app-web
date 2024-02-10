@@ -22,6 +22,13 @@ const Messages = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if (!auth.currentUser?.uid) {
+          console.warn("error loading auth")
+          setTimeout(() => {
+            fetchData()
+          }, 2000)
+          return
+        }
         const userDocRef = doc(collection(firestore, "users"), auth.currentUser.uid);
         const userDocSnapshot = await getDoc(userDocRef);
 
@@ -31,7 +38,7 @@ const Messages = () => {
 
           const connectedChatIds = connectedChatsRef.map(chat => chat.id);
 
-          const letterboxQuery = query(collection(firestore, "letterbox"), where("members", "array-contains", "/users/" + auth.currentUser.uid));
+          const letterboxQuery = query(collection(firestore, "letterbox"), where("members", "array-contains", userDocRef));
           const letterboxQuerySnapshot = await getDocs(letterboxQuery);
 
           const messages = [];
@@ -40,17 +47,15 @@ const Messages = () => {
             const letterboxData = doc.data();
             const lettersCollectionRef = collection(doc.ref, "letters");
             const lettersQuerySnapshot = await getDocs(lettersCollectionRef);
-
-            lettersQuerySnapshot.forEach((letterDoc) => {
-              const letter = letterDoc.data();
-              messages.push({
-                collectionId: letterDoc.id,
-                // filter rather than find - to allow group chats
-                receiver: letterboxData.members.filter(member => !member.includes(auth.currentUser.uid)),
-                content: letter.content,
-                deleted: letter.deleted_at,
-                moderation: letter.moderation
-              });
+            const queryDocumentSnapshots = lettersQuerySnapshot.docs
+            const latestMessage = queryDocumentSnapshots[0].data()
+            messages.push({
+              collectionId: queryDocumentSnapshots[0].id,
+              // filter rather than find - to allow group chats
+              receiver: letterboxData.members.filter(memberRef => memberRef.id !== auth.currentUser.uid).id,
+              content: latestMessage.content,
+              deleted: latestMessage.deleted_at,
+              moderation: latestMessage.moderation
             });
           }
           console.log(messages)
