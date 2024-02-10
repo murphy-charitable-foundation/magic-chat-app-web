@@ -11,7 +11,7 @@ export default function MessageBoard({ messages }) {
       {messages?.map((chat, i) => (
         <Box key={i} sx={{ background: "#F5F5F5", padding: "8px 16px" }}>
           <Link
-            href={`/messages/${chat.collectionId}`}
+            href={`/messages/${chat.letterboxId}`}
             sx={{ textDecoration: "none" }}
           >
             Chat with: {chat.receiver}

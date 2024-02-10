@@ -49,7 +49,9 @@ const Messages = () => {
             const lettersQuerySnapshot = await getDocs(lettersCollectionRef);
             const queryDocumentSnapshots = lettersQuerySnapshot.docs
             const latestMessage = queryDocumentSnapshots[0].data()
+            console.log(letterboxQuerySnapshot)
             messages.push({
+              letterboxId: doc.id,
               collectionId: queryDocumentSnapshots[0].id,
               // filter rather than find - to allow group chats
               receiver: letterboxData.members.filter(memberRef => memberRef.id !== auth.currentUser.uid).id,
@@ -77,9 +79,6 @@ const Messages = () => {
         <Typography variant="h1">Chats</Typography>
       </Stack>
       <MessageBoard messages={connectedChatsObjects} />
-      {/* {connectedChatsObjects.map(c => (
-        <div>{c.id}</div>
-      ))} */}
     </Box>
   );
 };

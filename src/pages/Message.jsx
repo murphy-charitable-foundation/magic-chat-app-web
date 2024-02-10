@@ -14,8 +14,8 @@ import {
   getDoc
 } from "firebase/firestore";
 
-function Message() {
-  const [message, setMessage] = useState([]);
+function Messages() {
+  const [messages, setMessage] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [user, setUser] = useState(null);
   const [childRef, setChildRef] = useState(null)
@@ -29,24 +29,25 @@ function Message() {
   });
 
   useEffect(() => {
-    getSubcollectionData();
+    getSubData()
   }, []);
 
   const collectionName = "letterbox"; // Replace "letterbox" with the actual collection name
   const splitUrl = window.location.href.split("/")
-  const documentId = splitUrl[splitUrl.length - 1]; // Replace "documentIdFromParams" with the actual document ID from URL parameters
+  const letterboxId = splitUrl[splitUrl.length - 1]
+  // const letterboxId = splitUrl[splitUrl.length - 1]; // Replace "letterboxIdFromParams" with the actual document ID from URL parameters
 
   const getSubcollectionData = async () => {
     try {
-      const documentRef = doc(collection(firestore, collectionName), documentId);
+      const documentRef = doc(collection(firestore, collectionName), letterboxId);
       console.log(0)
       // errors for permissions here
       const documentSnapshot = await getDoc(documentRef);
-      console.group(1)
+      console.log(1)
       if (documentSnapshot.exists()) {
         const subcollectionRef = collection(documentRef, "letters");
         const subcollectionSnapshot = await getDocs(subcollectionRef);
-        console.group(2)
+        console.log(2)
         const messages = [];
 
         subcollectionSnapshot.forEach((subDoc) => {
@@ -72,47 +73,49 @@ function Message() {
     }
   };
 
+  const getSubData = async () => {
+    try {
+      const collectionRef = collection(firestore, collectionName);
+      const querySnapshot = await getDocs(query(collectionRef, where("letterboxId", "==", letterboxId)));
 
+      const documentRe = doc(collection(firestore, collectionName), letterboxId);
+      const documentSnapshot = await getDoc(documentRe);
 
-  // useEffect(() => {
-  //   console.log("new id", childId)
-  //   let isMounted = true;
+      console.log(documentSnapshot)
 
-  //   if (!childId) return
-  //   const fetchData = async () => {
-  //     try {
-  //       const collectionRef = collection(firestore, "Chat");
-  //       const chatBuddy = window.location.pathname.split("/messages/")[1];
-  //       const intlBuddyRef = doc(collection(firestore, 'InternationalBuddy'), chatBuddy);
-  //       const childReference = doc(collection(firestore, 'Child'), childId);
-  //       setChildRef(childReference);
+      const subcollectionRe = collection(documentRe, "letters");
+      console.log(subcollectionRe)
+      const subcollectionSnapshott = await getDocs(subcollectionRe);
+      console.log(subcollectionSnapshott)
+      
+      if (subcollectionSnapshott.empty) {
+        console.log("No documents found.");
+        return [];
+      }
+  
 
-  //       const q = query(
-  //         collectionRef,
-  //         where("child", '==', childReference),
-  //         where("international_buddy", '==', intlBuddyRef)
-  //       );
-
-  //       const docSnapshot = await getDocs(q);
-
-  //       if (isMounted) {
-  //         setMessageDocRef(docSnapshot);
-
-  //         if (!docSnapshot.empty) {
-  //           setMessage(docSnapshot.docs[0].data().Messages);
-  //         }
-  //       }
-  //     } catch (e) {
-  //       console.error('Error fetching chat:', e);
-  //     }
-  //   };
-
-  //   fetchData();
-
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, [childId]);
+  
+      const msgs = [];
+  
+      subcollectionSnapshott.forEach((subDoc) => {
+        const letter = subDoc.data();
+        msgs.push({
+          collectionId: subDoc.id,
+          // receiver: letter.members.filter(member => member !== auth.currentUser.uid),
+          content: letter.content,
+          content_type: letter.content_type,
+          deleted: letter.deleted_at,
+          moderation: letter.moderation
+        });
+      });
+  
+      setMessage(msgs)
+      return messages;
+    } catch (error) {
+      console.error("Error fetching subcollection data:", error);
+      return [];
+    }
+  };
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -127,9 +130,9 @@ function Message() {
       sender: childRef,
     };
 
-    const updatedMessages = [...message, newMessagePayload];
+    const updatedMessages = [...messages, newMessagePayload];
 
-    await updateDoc(messageDocRef.docs[0].ref, { Messages: updatedMessages });
+    await updateDoc(messageDocRef.docs[0].ref, { Message: updatedMessages });
 
     setMessage(updatedMessages);
 
@@ -145,7 +148,7 @@ function Message() {
       <div>
         {user ? (
           <div>
-            <MessagesComp chat={message} />
+            <MessagesComp chat={messages} />
             <NewMessage setNewMessage={setNewMessage} sendMessage={sendMessage} newMessage={newMessage} />
           </div>
         ) : (
@@ -156,4 +159,4 @@ function Message() {
   );
 }
 
-export default Message;
+export default Messages;
