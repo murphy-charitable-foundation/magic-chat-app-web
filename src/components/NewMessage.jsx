@@ -3,7 +3,7 @@ import { Button, Stack, TextField } from "@mui/material";
 import React from "react";
 import FileUploader from "./FileUpload";
 
-export default function NewMessage({ newMessage, sendMessage, setNewMessage }) {
+export default function NewMessage({ newMessage, sendMessage, setNewMessage, onUploadComplete }) {
   return (
     <Stack direction="row" sx={{ alignItems: "center", marginTop: "12px" }}>
       <form onSubmit={sendMessage}>
@@ -18,7 +18,7 @@ export default function NewMessage({ newMessage, sendMessage, setNewMessage }) {
             flex: 1,
           }}
         ></TextField>
-        <FileUploader />
+        <FileUploader onUploadComplete={onUploadComplete} />
         <Button type="submit">Send</Button>
       </form>
     </Stack>

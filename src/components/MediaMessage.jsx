@@ -44,8 +44,9 @@ export default function MediaMessage({ messageData, key }) {
     const [imageUrl, setImageUrl] = useState("");
     // use auth to determine if user is a child or international buddy
     let userType = "default";
-    if (messageData.sender && messageData.sender.path) {
-        userType = messageData.sender.path.includes("Child") ? "sender" : "receiver"
+    const userUID = auth.currentUser.uid
+    if(messageData.sentby){
+      userType = messageData.sentby.id === userUID ? "sender" : "receiver"
     }
     const boxStyling = styling[userType]
     if (messageData.content) {

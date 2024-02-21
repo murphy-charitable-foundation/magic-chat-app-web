@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
 
-const FileUploader = () => {
+const FileUploader = ({ onUploadComplete }) => {
   const [file, setFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [downloadURL, setDownloadURL] = useState(null);
@@ -29,6 +29,7 @@ const FileUploader = () => {
         async () => {
           const url = await getDownloadURL(uploadTask.snapshot.ref);
           setDownloadURL(url);
+          onUploadComplete(url)
         }
       );
     }
@@ -39,7 +40,6 @@ const FileUploader = () => {
       <input type="file" onChange={handleChange} />
       <button onClick={handleUpload}>Upload</button>
       {uploadProgress > 0 && <p>Upload Progress: {uploadProgress}%</p>}
-      {downloadURL && <p>Download URL: {downloadURL}</p>}
     </div>
   );
 };
