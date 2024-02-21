@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
-  Avatar,
+  //Avatar,
   Box,
   Button,
   Checkbox,
@@ -8,35 +8,37 @@ import {
   FormControlLabel,
   Grid,
   Input,
-  //TextField,
+  CardMedia,
+  TextField,
   Typography,
 } from "@mui/material";
 //import './ResetPassword.css'
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom/dist";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { Link, useNavigate } from "react-router-dom";
+//import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 
-import Footer from "../components/Footer";
-import GuestHeader from "../components/HeaderGuest";
-
+//import Footer from "../components/Footer";
+//import GuestHeader from "../components/HeaderGuest";
 import { auth } from '../firebase'
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
 
 
 
 const Login = () => {
 
-  const signInWithGoogle = () => {
-    const provider = new GoogleAuthProvider()
-    signInWithPopup(auth, provider).then(result => {
-      console.log("success")
-      navigate("/messages")
-    }).catch(e => {
-      console.error("Error: ", e)
-    })
-  }
+  //const signInWithGoogle = () => {
+    //const provider = new GoogleAuthProvider()
+    //signInWithPopup(auth, provider).then(result => {
+      //console.log("success")
+      //navigate("/messages")
+    //}).catch(e => {
+      //console.error("Error: ", e)
+    //})
+  //}
 
   const navigate = useNavigate();
   const [err, setErr] = useState(false);
@@ -75,101 +77,123 @@ const Login = () => {
   };
 
 
-
+  
   return (
-    <>
-      <GuestHeader />
-      <Container component="main" maxWidth="xs" >
-        <button onClick={signInWithGoogle}>Sign In With Google</button>
-        <Box
+    <> 
+      <Container component="main" maxWidth="xs" sx={{mt:4,padding:0}}>
+       <Box
           sx={{
-            marginTop: 3,
+            marginTop: 0,
+            display: "flex",
+            //flex:1,
+            flexDirection: "row",
+            justifyContent:'center',
+            alignItems: "center",
+            
+          }}
+       >
+          
+         <button style={{position:"absolute",left:15,border:'none',background:"none"}} onClick={() => navigate(-1)}> <KeyboardArrowLeftIcon /></button>
+         <Typography component="h1" variant="h5" >         
+            Login
+         </Typography>
+       </Box>
+
+      <Box
+          sx={{
+            marginTop: 5,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             
           }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <Box
+      >
+          
+        <CardMedia
+              sx={{ width: "200px", m: "2px auto", marginTop:"15px" }}
+              component="img"
+              image="./logo.png"
+        />
+
+        <Box
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: 1 }}           
-          >
+            sx={{ mt: 12 }}           
+        >
+          <Typography component="h1" variant="h6" >         
+            Email
+          </Typography>
             < Input
               margin="normal"
               required
               fullWidth
               type="email"
               label="Email"
-              //placeholder="email"
-              //name="email"
+              placeholder="Ex: user@gmail.com"
+              name="email"
               autoComplete="email"
               autoFocus
-            />
 
+            />
+          <Typography component="h1" variant="h6" sx={{mt:6}}>         
+            Password
+          </Typography>
             < Input                    
               margin="normal"
               required
               fullWidth
-              //name="password"
+              name="password"
               //value={password}
               label="Password"
               type="password"          
-              //placeholder="password"
-              //id="password"
+              placeholder="*******"
+              id="password"
               autoComplete="current-password"
+              
             />
 
+
+            <Grid container item marginTop={5}>
+              <Grid item xs>
+                <button style={{border:'none',background:"none", fontSize:17, left:0,textDecoration:'underline',padding:0}} onClick={triggerResetEmail}>Forget your password? </button>
+              </Grid>
+              
+            </Grid>
+
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              sx={{marginTop:3,padding:0}}
               label="Remember me"
+              control={<Checkbox value="remember" color="primary" />}
             />
 
             <Button
               type="submit"
-              fullWidth
-              variant="contained"
+              fullWidth             
+              //variant="contained"
               sx={{
-                "&  .MuiButton-contained": {
-                  textTransform: "lowercase",
-                  mt: 3,
-                  mb: 2,
-                },
+                //"&  .MuiButton-contained": {
+                  //textTransform: "lowercase",
+                  //mt: 3,
+                  //mb: 2,
+                //},
+                marginTop:4,
+                backgroundColor:"lightgray",
+                color:"gray",
+                textTransform:'lowercase'
+                
               }}
             >
               Login
             </Button>
             {err && <span>Something went wrong</span>}
-            <Grid container item marginTop={2}>
-              <Grid item xs>
-                <button onClick={triggerResetEmail}>Fogot password?</button>
-              </Grid>
-              {<Grid>
-                <Link to="/SignUp" variant="body2">
-                  {"Don't have an account? SignUp"}
-                </Link>
-              </Grid> }
-            </Grid>
+
+            </Box>
           </Box>
-        </Box>
+        
       </Container>
-      <hr
-        style={{
-          width: "75%",
-          marginLeft: "auto",
-          marginRight: "auto",
-          marginTop: 40,
-          boxShadow: "4px",
-        }}
-      />
-      <Footer />
+
+      
     </>
   );
 };
