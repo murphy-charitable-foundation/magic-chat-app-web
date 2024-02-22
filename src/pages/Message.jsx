@@ -18,7 +18,7 @@ function Messages() {
   const [messages, setMessage] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [user, setUser] = useState(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null)
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([])
   const [messageDocRef, setMessageDocRef] = useState(null)
   const [userSet, setUserSet] = useState(false)
   useEffect(() => {
@@ -71,15 +71,17 @@ function Messages() {
       }
 
       const msgs = [];
+      // REZ - this used to break but shouldn't anymore
       subcollectionSnapshott.forEach((subDoc) => {
         const letter = subDoc.data();
         msgs.push({
           collectionId: subDoc.id,
+          attachments: letter.attachments,
+          letter: letter.letter,
           sentby: letter.sentby,
-          content: letter.content,
-          content_type: letter.content_type,
-          deleted: letter.deleted_at,
-          moderation: letter.moderation
+          created_at: letter.created_at,
+          deleted_at: letter.deleted_at,
+          moderation: letter.moderation, 
         });
       });
 
@@ -95,25 +97,25 @@ function Messages() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if(imagePreviewUrl){
-      nowSendImage()
-    }
     if (!newMessage.trim()) return;
-    if (!userSet) {
-      await findUser()
-    }
+    if (!userSet) await findUser()
 
     try {
       const newMessagePayload = {
         deleted_at: null,
-        content: newMessage.trim(),
-        moderated_at: null,
-        content_type: "text",
+        letter: newMessage,
+        created_at: new Date(),
+        moderation: {
+          approved: false,
+          comment: "",
+          moderated_at: null
+        },
         sentby: user,
+        attachments: imagePreviewUrl
       };
       const updatedMessages = [...messages, newMessagePayload];
       const subcollectionRef = collection(messageDocRef, "letters");
-
+      // REZ - this will break if permissions set
       await addDoc(subcollectionRef, newMessagePayload);
 
       console.log("Updated messages:", updatedMessages);
@@ -129,35 +131,9 @@ function Messages() {
     }
   };
   const sendImageMessage = async (url) => {
-    setImagePreviewUrl(url)
+    setImagePreviewUrl([url, ...imagePreviewUrl])
     if (!userSet) {
      await findUser()
-    }
-  }
-  const nowSendImage = async () => {
-    try {
-      const newMessagePayload = {
-        deleted_at: null,
-        content: imagePreviewUrl,
-        moderated_at: null,
-        content_type: "media",
-        sentby: user,
-      };
-      const updatedMessages = [...messages, newMessagePayload];
-      const subcollectionRef = collection(messageDocRef, "letters");
-
-      await addDoc(subcollectionRef, newMessagePayload);
-
-      console.log("Updated messages:", updatedMessages);
-
-      if (!messageDocRef) {
-        throw new Error("Message document reference not found.");
-      }
-
-      await getSubData()
-      setImagePreviewUrl(null);
-    } catch (error) {
-      console.error("Error sending message:", error);
     }
   }
   return (
@@ -172,7 +148,7 @@ function Messages() {
           <div>
             <MessagesComp chat={messages} />
             <NewMessage setNewMessage={setNewMessage} sendMessage={sendMessage} newMessage={newMessage} onUploadComplete={sendImageMessage} />
-            <ImageThumbnail url={imagePreviewUrl} />
+            {imagePreviewUrl.map(img => <ImageThumbnail url={img} />)}
           </div>
         ) : (
           <div>not logged in</div>

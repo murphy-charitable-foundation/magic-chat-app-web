@@ -5,7 +5,6 @@ import { storage } from '../firebase';
 const FileUploader = ({ onUploadComplete }) => {
   const [file, setFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [downloadURL, setDownloadURL] = useState(null);
 
   const handleChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -28,7 +27,6 @@ const FileUploader = ({ onUploadComplete }) => {
         },
         async () => {
           const url = await getDownloadURL(uploadTask.snapshot.ref);
-          setDownloadURL(url);
           onUploadComplete(url)
         }
       );

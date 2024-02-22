@@ -14,11 +14,17 @@ export default function MessagesComp({ chat = [] }) {
           overflow="scroll"
         >
           {chat.map((message) => (
-            message.content_type === "text" ? (
-              <TextMessage messageData={message} key={message.id} />
-            ) : message.content_type === "media" ? (
-              <MediaMessage messageData={message} key={message.id} />
-            ) : null
+            <div>
+              <p>{message.letter}</p>
+              {message.attachments?.map(att => (
+                <img src={att} />
+              ))}
+            </div>
+            // message.content_type === "text" ? (
+            //   <TextMessage messageData={message} key={message.id} />
+            // ) : message.content_type === "media" ? (
+            //   <MediaMessage messageData={message} key={message.id} />
+            // ) : null
           ))}
         </Stack>
       </Box>
