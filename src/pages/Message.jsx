@@ -49,7 +49,6 @@ function Messages() {
 
     const userDocRef = doc(firestore, "users", user.uid);
     setUser(userDocRef)
-    // setChildRef(userDocRef);
     setUserSet(true);
   };
 
@@ -60,7 +59,6 @@ function Messages() {
   const collectionName = "letterbox";
   const splitUrl = window.location.href.split("/")
   const letterboxId = splitUrl[splitUrl.length - 1]
-  let lastDocument = null;
 
   const getSubData = async () => {
     try {
@@ -74,9 +72,7 @@ function Messages() {
       console.log("collecting messages")
       const q = query(subcollectionRe, orderBy("created_at", "desc"), limit(1));
       const subcollectionSnapshott = await getDocs(q);
-
       console.log(subcollectionSnapshott)
-      // to do - orderBy has no effect
       if (subcollectionSnapshott.empty) {
         setMessageDocRef(documentRe)
         return [];
@@ -127,51 +123,6 @@ function Messages() {
       console.error("Error fetching next message:", error);
     }
   };
-
-  // const getSubData = async () => {
-  //   try {
-  //     const collectionRef = collection(firestore, collectionName);
-  //     const querySnapshot = await getDocs(query(collectionRef, where("letterboxId", "==", letterboxId)));
-
-  //     const documentRe = doc(collection(firestore, collectionName), letterboxId);
-  //     const documentSnapshot = await getDoc(documentRe);
-
-  //     const subcollectionRe = collection(documentRe, "letters");
-  //     console.log("collecting messages")
-  //     const subcollectionSnapshott = await getDocs(
-  //       query(subcollectionRe, orderBy("created_at", "desc"), limit(2))
-  //   );
-  //     console.log(subcollectionSnapshott)
-  //     // to do - orderBy has no effect
-  //     if (subcollectionSnapshott.empty) {
-  //       setMessageDocRef(documentRe)
-  //       return [];
-  //     }
-
-  //     const msgs = [];
-  //     // REZ - this used to break but shouldn't anymore
-  //     subcollectionSnapshott.forEach((subDoc) => {
-  //       const letter = subDoc.data();
-  //       msgs.push({
-  //         collectionId: subDoc.id,
-  //         attachments: letter.attachments,
-  //         letter: letter.letter,
-  //         sentby: letter.sentby,
-  //         created_at: letter.created_at,
-  //         deleted_at: letter.deleted_at,
-  //         moderation: letter.moderation, 
-  //       });
-  //     });
-  //     setMessage([])
-  //     setMessage(msgs)
-  //     setMessageDocRef(documentRe)
-
-  //     return messages;
-  //   } catch (error) {
-  //     console.error("Error fetching subcollection data:", error);
-  //     return [];
-  //   }
-  // };
 
   const sendMessage = async (e) => {
     e.preventDefault();
