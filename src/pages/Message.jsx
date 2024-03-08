@@ -9,11 +9,9 @@ import {
   getDocs,
   doc,
   where,
-  getDoc,
   addDoc,
   orderBy,
   limit,
-  startAt,
   startAfter
 } from "firebase/firestore";
 import ImageThumbnail from "../components/ImageThumbnail";
@@ -62,15 +60,10 @@ function Messages() {
 
   const getSubData = async () => {
     try {
-      const collectionRef = collection(firestore, collectionName);
-      const querySnapshot = await getDocs(query(collectionRef, where("letterboxId", "==", letterboxId)));
-
       const documentRe = doc(collection(firestore, collectionName), letterboxId);
-      const documentSnapshot = await getDoc(documentRe);
-
       const subcollectionRe = collection(documentRe, "letters");
       console.log("collecting messages")
-      const q = query(subcollectionRe, orderBy("created_at", "desc"), limit(1));
+      const q = query(subcollectionRe, orderBy("created_at", "desc"), limit(PAGE_SIZE));
       const subcollectionSnapshott = await getDocs(q);
       console.log(subcollectionSnapshott)
       if (subcollectionSnapshott.empty) {
@@ -86,7 +79,7 @@ function Messages() {
           collectionId: subDoc.id,
           attachments: letter.attachments,
           letter: letter.letter,
-          sentby: letter.sentby,
+          sent_by: letter.sent_by,
           created_at: letter.created_at,
           deleted_at: letter.deleted_at,
           moderation: letter.moderation,
@@ -108,8 +101,17 @@ function Messages() {
       if (!lastMessageDoc) return;
 
       const subcollectionRe = collection(messageDocRef, "letters");
-      const q = query(subcollectionRe, orderBy("created_at", "desc"), startAfter(lastMessageDoc), limit(1));
+      const q = query(subcollectionRe,
+        where("deleted_at", "==", null),
+        where("moderation.approved", "==", true),
+        orderBy("deleted_at"),
+        orderBy("moderation.approved"),
+        orderBy("created_at", "desc"),
+        startAfter(lastMessageDoc),
+        limit(PAGE_SIZE)
+      );
       const subcollectionSnapshott = await getDocs(q);
+
 
       if (subcollectionSnapshott.empty) {
         console.log("No more messages available.");
@@ -139,7 +141,7 @@ function Messages() {
           comment: "",
           moderated_at: null
         },
-        sentby: user,
+        sent_by: user,
         attachments: imagePreviewUrl
       };
       const updatedMessages = [...messages, newMessagePayload];

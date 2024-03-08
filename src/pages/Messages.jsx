@@ -13,11 +13,12 @@ import {
   getDocs,
   where,
   doc,
-  getDoc
+  getDoc,
+  orderBy,
+  limit
 } from "firebase/firestore";
 
 const Messages = () => {
-  const [childId, setChildId] = useState("");
   const [connectedChatsObjects, setConnectedChatsObjects] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -33,11 +34,6 @@ const Messages = () => {
         const userDocSnapshot = await getDoc(userDocRef);
 
         if (userDocSnapshot.exists()) {
-          const userData = userDocSnapshot.data();
-          const connectedChatsRef = userData?.connected_penpals || [];
-
-          const connectedChatIds = connectedChatsRef.map(chat => chat.id);
-
           const letterboxQuery = query(collection(firestore, "letterbox"), where("members", "array-contains", userDocRef));
           const letterboxQuerySnapshot = await getDocs(letterboxQuery);
 
@@ -46,8 +42,15 @@ const Messages = () => {
           for (const doc of letterboxQuerySnapshot.docs) {
             const letterboxData = doc.data();
             const lettersCollectionRef = collection(doc.ref, "letters");
-            const lettersQuerySnapshot = await getDocs(lettersCollectionRef);
-            const queryDocumentSnapshots = lettersQuerySnapshot.docs
+            const queryDocumentSnapshots = getDocs(
+              query(lettersCollectionRef,
+                where("deleted_at", "==", null),
+                where("moderation.approved", "==", true),
+                orderBy("deleted_at"),
+                orderBy("moderation.approved"),
+                orderBy("created_at", "desc"),
+                limit(1))
+            )
             const latestMessage = queryDocumentSnapshots[0].data()
             console.log(letterboxQuerySnapshot)
             messages.push({
@@ -55,7 +58,7 @@ const Messages = () => {
               collectionId: queryDocumentSnapshots[0].id,
               // filter rather than find - to allow group chats
               receiver: letterboxData.members.filter(memberRef => memberRef.id !== auth.currentUser.uid).id,
-              content: latestMessage.content,
+              content: latestMessage.letter,
               deleted: latestMessage.deleted_at,
               moderation: latestMessage.moderation
             });
@@ -63,7 +66,6 @@ const Messages = () => {
           console.log(messages)
 
           setConnectedChatsObjects(messages);
-          setChildId(userDocSnapshot.id);
         }
       } catch (error) {
         console.error('Error fetching data:', error);

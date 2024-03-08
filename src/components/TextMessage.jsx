@@ -33,8 +33,8 @@ export default function TextMessage({ messageData, key }) {
   // use auth to determine if user is a child or international buddy
   let userType = "default";
   const userUID = auth.currentUser.uid
-  if(messageData.sentby){
-    userType = messageData.sentby.id === userUID ? "sender" : "receiver"
+  if(messageData.sent_by){
+    userType = messageData.sent_by.id === userUID ? "sender" : "receiver"
   }
   const boxStyling = styling[userType]
   if (messageData.content) {
