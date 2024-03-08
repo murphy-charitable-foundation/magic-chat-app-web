@@ -9,6 +9,7 @@ const FileUploader = ({ onUploadComplete }) => {
   const handleChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
+    handleUpload()
   };
 
   const handleUpload = async () => {
@@ -35,9 +36,9 @@ const FileUploader = ({ onUploadComplete }) => {
 
   return (
     <div>
-      <input type="file" onChange={handleChange} />
-      <button onClick={handleUpload}>Upload</button>
-      {uploadProgress > 0 && <p>Upload Progress: {uploadProgress}%</p>}
+      <input type="file" onChange={handleChange} disabled={uploadProgress > 0 && uploadProgress < 100} />
+      {/* <button onClick={handleUpload}>Upload</button> */}
+      {uploadProgress > 0 && uploadProgress < 100 && <p>Upload Progress: {uploadProgress}%</p>}
     </div>
   );
 };
