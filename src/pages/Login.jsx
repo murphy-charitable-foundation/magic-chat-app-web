@@ -170,7 +170,8 @@ const Login = () => {
                 marginTop:4,
                 backgroundColor:"lightgray",
                 color:"gray",
-                textTransform:'lowercase'
+                textTransform:'lowercase',
+                borderRadius:"20px"
                 
               }}
             >
