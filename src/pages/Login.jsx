@@ -12,7 +12,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-//import './ResetPassword.css'
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 //import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -22,7 +22,7 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 //import GuestHeader from "../components/HeaderGuest";
 import { auth } from '../firebase'
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 
@@ -67,17 +67,7 @@ const Login = () => {
     }
 
   };
-
-  const [email,setEmail]=useState('')
-  const auth=getAuth();
-
-  const triggerResetEmail = async() =>{
-    await sendPasswordResetEmail(auth,email);
-    console.log("Password reset email sent")
-  };
-
-
-  
+ 
   return (
     <> 
       <Container component="main" maxWidth="xs" sx={{mt:4,padding:0}}>
@@ -153,10 +143,10 @@ const Login = () => {
               
             />
 
-
             <Grid container item marginTop={5}>
               <Grid item xs>
-                <button style={{border:'none',background:"none", fontSize:17, left:0,textDecoration:'underline',padding:0}} onClick={triggerResetEmail}>Forget your password? </button>
+                <p><Link to="reset-password">Forget your password</Link></p>
+                
               </Grid>
               
             </Grid>
