@@ -2,16 +2,16 @@ import React from "react";
 
 import { Outlet } from "react-router";
 
-import { Container, Paper } from "@mui/material";
+import { Container, Box } from "@mui/material";
 
 const LayoutGuest = () => {
   return (
     <>
      
-      <Container sx={{ maxWidth: "90%", marginTop: 3 }}>
-        <Paper sx={{ minHeight: 300, padding: 3 }}>
+      <Container sx={{ maxWidth: "100%", marginTop: 0 }}>
+        <Box sx={{ minHeight: 300, padding: 0 }}>
           <Outlet />
-        </Paper>
+        </Box>
       </Container>
      
     </>
