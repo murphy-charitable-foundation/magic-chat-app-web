@@ -42,7 +42,7 @@ const Messages = () => {
           for (const doc of letterboxQuerySnapshot.docs) {
             const letterboxData = doc.data();
             const lettersCollectionRef = collection(doc.ref, "letters");
-            const queryDocumentSnapshots = getDocs(
+            const lettersQuerySnapshot = await getDocs(
               query(lettersCollectionRef,
                 where("deleted_at", "==", null),
                 where("moderation.approved", "==", true),
@@ -51,8 +51,9 @@ const Messages = () => {
                 orderBy("created_at", "desc"),
                 limit(1))
             )
+            const queryDocumentSnapshots = lettersQuerySnapshot.docs
             const latestMessage = queryDocumentSnapshots[0].data()
-            console.log(letterboxQuerySnapshot)
+            console.log(latestMessage)
             messages.push({
               letterboxId: doc.id,
               collectionId: queryDocumentSnapshots[0].id,
