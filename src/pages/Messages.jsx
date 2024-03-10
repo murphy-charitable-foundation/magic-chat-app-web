@@ -22,7 +22,6 @@ const Messages = () => {
   const [connectedChatsObjects, setConnectedChatsObjects] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-      try {
         if (!auth.currentUser?.uid) {
           console.warn("error loading auth")
           setTimeout(() => {
@@ -45,6 +44,7 @@ const Messages = () => {
             const lettersQuerySnapshot = await getDocs(
               query(lettersCollectionRef,
                 where("status", "==", 'sent'),
+                where("deleted_at", "==", null),
                 orderBy("created_at", "desc"),
                 limit(10)
               )
@@ -66,9 +66,6 @@ const Messages = () => {
 
           setConnectedChatsObjects(messages);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
     };
 
     fetchData();
