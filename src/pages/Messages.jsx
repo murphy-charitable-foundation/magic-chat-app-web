@@ -49,18 +49,30 @@ const Messages = () => {
                 limit(10)
               )
             )
-            const queryDocumentSnapshots = lettersQuerySnapshot.docs
-            const latestMessage = queryDocumentSnapshots[0].data()
-            console.log(latestMessage)
-            messages.push({
-              letterboxId: doc.id,
-              collectionId: queryDocumentSnapshots[0].id,
-              // filter rather than find - to allow group chats
-              receiver: letterboxData.members.filter(memberRef => memberRef.id !== auth.currentUser.uid).id,
-              content: latestMessage.letter,
-              deleted: latestMessage.deleted_at,
-              moderation: latestMessage.moderation
-            });
+            if(!lettersQuerySnapshot.empty){
+              const queryDocumentSnapshots = lettersQuerySnapshot.docs
+              const latestMessage = queryDocumentSnapshots[0].data()
+              console.log(latestMessage)
+              messages.push({
+                letterboxId: doc.id,
+                collectionId: queryDocumentSnapshots[0].id,
+                // filter rather than find - to allow group chats
+                receiver: letterboxData.members.filter(memberRef => memberRef.id !== auth.currentUser.uid).id,
+                content: latestMessage.letter,
+                deleted: latestMessage.deleted_at,
+                moderation: latestMessage.moderation
+              });
+            }
+            const pendingLettersQuerySnapshot = await getDocs(
+              query(lettersCollectionRef,
+                where("status", "==", 'pending_review'),
+                where("deleted_at", "==", null),
+                where("sent_by", "==", userDocRef),
+                orderBy("created_at", "desc"),
+                limit(10)
+              )
+            )
+            console.log(pendingLettersQuerySnapshot)
           }
           console.log(messages)
 

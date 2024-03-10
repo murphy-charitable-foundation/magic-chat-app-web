@@ -66,6 +66,7 @@ function Messages() {
       const q = query(
         subcollectionRe,
         where("status", "==", 'sent'),
+        where("deleted_at", '==', null),
         orderBy("created_at", "desc"),
         limit(PAGE_SIZE)
         // orderBy("created_at", "desc"),
