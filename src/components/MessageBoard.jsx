@@ -16,7 +16,7 @@ export default function MessageBoard({ messages = [] }) {
           >
             Chat with: {chat.receiver}
             <br />
-            <p>{chat.content}</p>
+            <p>{chat.letter}</p>
             <br />
           </Link>
         </Box>

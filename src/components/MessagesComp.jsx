@@ -4,6 +4,7 @@ import TextMessage from "./TextMessage";
 import MediaMessage from "./MediaMessage";
 
 export default function MessagesComp({ chat = [] }) {
+  // console.log('chat', chat)
   return (
     <div>
       <Box overflow="auto" minHeight="40vh" maxHeight="40vh">

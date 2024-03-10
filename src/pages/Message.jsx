@@ -26,9 +26,9 @@ function Messages() {
   const [messageDocRef, setMessageDocRef] = useState(null)
   const [userSet, setUserSet] = useState(false)
   const [lastMessageDoc, setLastMessageDoc] = useState(null);
+  const [chatId, setChatId] = useState("");
 
   useEffect(() => {
-    console.log("finding user")
     findUser()
   }, [userSet]);
 
@@ -50,15 +50,22 @@ function Messages() {
     setUserSet(true);
   };
 
-  useEffect(() => {
-    getSubData()
-  }, []);
-
   const collectionName = "letterbox";
   const splitUrl = window.location.href.split("/")
   const letterboxId = splitUrl[splitUrl.length - 1]
 
+  useEffect(() => {
+    if (letterboxId) {
+      setChatId(letterboxId)
+    }
+    getSubData()
+  }, [userSet]);
+
   const getSubData = async () => {
+    if(!user){
+      console.log('finding user')
+      await findUser()
+    }
     try {
       const documentRe = doc(collection(firestore, collectionName), letterboxId);
       const subcollectionRe = collection(documentRe, "letters");
@@ -78,6 +85,7 @@ function Messages() {
 
       const msgs = [];
       // REZ - this used to break but shouldn't anymore
+      console.log(subcollectionSnapshott)
       subcollectionSnapshott.forEach((subDoc) => {
         const letter = subDoc.data();
         msgs.push({
@@ -89,8 +97,39 @@ function Messages() {
           created_at: letter.created_at,
           moderation: letter.moderation_comments,
         });
+        console.log('letter', letter)
         setLastMessageDoc(subDoc); // Update last document for pagination
       });
+      if (user) {
+        console.log('user found in get sub data')
+        const pendingQ = query(
+          subcollectionRe,
+          where("status", "==", 'pending_review'),
+          where("deleted_at", '==', null),
+          orderBy("created_at", "desc"),
+          where("sent_by", "==", user),
+          limit(PAGE_SIZE)
+        );
+        const pendingSubcollectionSnapshott = await getDocs(pendingQ);
+        if (!pendingSubcollectionSnapshott.empty) {
+          pendingSubcollectionSnapshott.forEach((subDoc) => {
+            const letter = subDoc.data();
+            msgs.push({
+              collectionId: subDoc.id,
+              attachments: letter.attachments,
+              letter: letter.letter,
+              sent_by: letter.sent_by,
+              status: letter.status,
+              created_at: letter.created_at,
+              moderation: letter.moderation_comments,
+              pending: true
+            });
+          })
+        }
+      }
+
+      // const msgs = [];
+      // REZ - this used to break but shouldn't anymore
       setMessage(msgs)
       console.log('get data', messages)
       setMessageDocRef(documentRe)
@@ -112,17 +151,15 @@ function Messages() {
         orderBy("created_at", "desc"),
         startAfter(lastMessageDoc),
         limit(PAGE_SIZE)
-        // where("deleted_at", "==", null),
-        // orderBy("deleted_at"),
-        // orderBy("moderation.approved"),
       );
+      console.log(lastMessageDoc)
       const subcollectionSnapshott = await getDocs(q);
-
 
       if (subcollectionSnapshott.empty) {
         console.log("No more messages available.");
         return;
       }
+      console.log(subcollectionSnapshott.length)
 
       const newMessage = subcollectionSnapshott.docs[0].data();
       setMessage(prevMessages => [...prevMessages, newMessage]);
@@ -136,17 +173,14 @@ function Messages() {
     e.preventDefault();
     if (!newMessage.trim()) return;
     if (!userSet) await findUser()
-
+    console.log(imagePreviewUrl, newMessage)
+  return
     try {
       const newMessagePayload = {
         deleted_at: null,
         letter: newMessage,
         created_at: new Date(),
-        moderation: {
-          approved: false,
-          comment: "",
-          moderated_at: null
-        },
+        status: 'pending_review',
         sent_by: user,
         attachments: imagePreviewUrl
       };
@@ -168,6 +202,7 @@ function Messages() {
     }
   };
   const sendImageMessage = async (url) => {
+    console.log('sendImageMessage')
     setImagePreviewUrl([url, ...imagePreviewUrl])
     if (!userSet) {
       await findUser()
@@ -185,7 +220,7 @@ function Messages() {
         {user ? (
           <div>
             <MessagesComp chat={messages} />
-            <NewMessage setNewMessage={setNewMessage} sendMessage={sendMessage} newMessage={newMessage} onUploadComplete={sendImageMessage} />
+            <NewMessage setNewMessage={setNewMessage} sendMessage={sendMessage} newMessage={newMessage} onUploadComplete={sendImageMessage} chatId={chatId} />
             {imagePreviewUrl.map(img => <ImageThumbnail url={img} />)}
           </div>
         ) : (

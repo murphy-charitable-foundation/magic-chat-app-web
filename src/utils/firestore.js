@@ -97,7 +97,7 @@ export const fetchData = async (setState) => {
             receiver: letterboxData.members.find(memberRef => memberRef.id !== auth.currentUser.uid).id,
             content: latestMessage.letter,
             deleted: latestMessage.deleted_at,
-            moderation: latestMessage.moderation
+            created_at: latestMessage.created_at,
           });
         }
   
@@ -118,16 +118,31 @@ export const fetchData = async (setState) => {
               letterboxId: doc.id,
               collectionId: queryDocumentSnapshots[0].id,
               receiver: letterboxData.members.find(memberRef => memberRef.id !== auth.currentUser.uid).id,
-              content: latestMessage.letter,
+              letter: latestMessage.letter,
               deleted: latestMessage.deleted_at,
-              moderation: latestMessage.moderation,
+              created_at: latestMessage.created_at,
               pending: true
             });
           }
       }
+      function findLatestMessages(messages) {
+        const latestMessagesMap = new Map();
+        for (const message of messages) {
+          if (latestMessagesMap.has(message.letterboxId)) {
+            const currentLatestMessage = latestMessagesMap.get(message.letterboxId);
+            if (message.created_at.seconds > currentLatestMessage.created_at.seconds) {
+              latestMessagesMap.set(message.letterboxId, message);
+            }
+          } else {
+            latestMessagesMap.set(message.letterboxId, message);
+          }
+        }
+        return Array.from(latestMessagesMap.values());
+      }
+
       console.log(messages, setState);
-      setState(messages)
-      return [messages];
+      setState(findLatestMessages(messages))
+    //   return [messages];
     }
   };
   

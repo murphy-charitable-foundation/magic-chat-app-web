@@ -2,20 +2,18 @@ import React, { useState } from 'react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
 
-const FileUploader = ({ onUploadComplete }) => {
-  const [file, setFile] = useState(null);
+const FileUploader = ({ onUploadComplete, chatId }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleChange = (event) => {
     const selectedFile = event.target.files[0];
-    setFile(selectedFile);
-    handleUpload()
+    handleUpload(selectedFile)
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (file) => {
     if (file) {
-      const storageRef = ref(storage, `uploads/${file.name}`);
-
+      console.log('uploading')
+      const storageRef = ref(storage, `uploads/letterbox/${chatId}/${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
       uploadTask.on('state_changed',
@@ -37,7 +35,6 @@ const FileUploader = ({ onUploadComplete }) => {
   return (
     <div>
       <input type="file" onChange={handleChange} disabled={uploadProgress > 0 && uploadProgress < 100} />
-      {/* <button onClick={handleUpload}>Upload</button> */}
       {uploadProgress > 0 && uploadProgress < 100 && <p>Upload Progress: {uploadProgress}%</p>}
     </div>
   );
