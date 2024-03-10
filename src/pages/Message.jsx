@@ -69,12 +69,6 @@ function Messages() {
         where("deleted_at", '==', null),
         orderBy("created_at", "desc"),
         limit(PAGE_SIZE)
-        // orderBy("created_at", "desc"),
-        // limit(PAGE_SIZE)
-        // where("deleted_at", "==", null),
-        // startAfter(lastMessageDoc),
-        // startAfter(lastMessageDoc),
-        // limit(PAGE_SIZE)
       );
       const subcollectionSnapshott = await getDocs(q);
       if (subcollectionSnapshott.empty) {

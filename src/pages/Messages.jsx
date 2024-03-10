@@ -6,21 +6,26 @@ import {
 import React, { useEffect, useState } from "react";
 import MessageBoard from "../components/MessageBoard";
 
-import { auth, firestore } from "../firebase";
-import {
-  collection,
-  query,
-  getDocs,
-  where,
-  doc,
-  getDoc,
-  orderBy,
-  limit
-} from "firebase/firestore";
+// import { auth, firestore } from "../firebase";
+// import {
+//   collection,
+//   query,
+//   getDocs,
+//   where,
+//   doc,
+//   getDoc,
+//   orderBy,
+//   limit
+// } from "firebase/firestore";
 import { fetchData } from "../utils/firestore";
 
 const Messages = () => {
   const [connectedChatsObjects, setConnectedChatsObjects] = useState([]);
+  const gatherData = async () => {
+    const messages = await fetchData(setConnectedChatsObjects);
+    console.log('messagessss', messages)
+    setConnectedChatsObjects(messages)
+  }
   useEffect(() => {
     // const fetchData = async () => {
     //     if (!auth.currentUser?.uid) {
@@ -80,9 +85,7 @@ const Messages = () => {
     //       setConnectedChatsObjects(messages);
     //     }
     // };
-
-    const messages = fetchData();
-    setConnectedChatsObjects(messages)
+    gatherData()
   }, []);
 
   return (
