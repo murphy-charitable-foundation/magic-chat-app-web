@@ -27,6 +27,7 @@ function Messages() {
   const [userSet, setUserSet] = useState(false)
   const [lastMessageDoc, setLastMessageDoc] = useState(null);
   const [chatId, setChatId] = useState("");
+  const [draft, setDraft] = useState(null)
 
   useEffect(() => {
     findUser()
@@ -84,7 +85,6 @@ function Messages() {
       }
 
       const msgs = [];
-      // REZ - this used to break but shouldn't anymore
       console.log(subcollectionSnapshott)
       subcollectionSnapshott.forEach((subDoc) => {
         const letter = subDoc.data();
@@ -98,7 +98,7 @@ function Messages() {
           moderation: letter.moderation_comments,
         });
         console.log('letter', letter)
-        setLastMessageDoc(subDoc); // Update last document for pagination
+        setLastMessageDoc(subDoc);
       });
       if (user) {
         console.log('user found in get sub data')
@@ -127,12 +127,32 @@ function Messages() {
           })
         }
       }
-
-      // const msgs = [];
-      // REZ - this used to break but shouldn't anymore
       setMessage(msgs)
       console.log('get data', messages)
       setMessageDocRef(documentRe)
+
+      const draftQ = query(
+        subcollectionRe,
+        where("status", "==", 'draft'),
+        where("deleted_at", '==', null),
+        orderBy("created_at", "desc"),
+        where("sent_by", "==", user),
+        limit(1)
+      );
+
+      const draftSnapshott = await getDocs(draftQ);
+      console.log("get draft", draftSnapshott)
+        if (!draftSnapshott.empty) {
+          draftSnapshott.forEach((subDoc) => {
+            const letter = subDoc.data();
+            console.log(letter)
+            setDraft({
+              attachments: subDoc.attachments,
+              letter: letter.letter,
+              collectionId: letter.id,
+            })
+          })
+        }
 
       return msgs;
     } catch (error) {
@@ -169,24 +189,22 @@ function Messages() {
     }
   };
 
-  const sendMessage = async (e) => {
+  const sendMessage = async (e, status='pending_review') => {
+    console.log(status)
     e.preventDefault();
     if (!newMessage.trim()) return;
     if (!userSet) await findUser()
-    console.log(imagePreviewUrl, newMessage)
-  return
     try {
       const newMessagePayload = {
         deleted_at: null,
         letter: newMessage,
         created_at: new Date(),
-        status: 'pending_review',
+        status,
         sent_by: user,
         attachments: imagePreviewUrl
       };
       const updatedMessages = [...messages, newMessagePayload];
       const subcollectionRef = collection(messageDocRef, "letters");
-      // REZ - this will break if permissions set
       await addDoc(subcollectionRef, newMessagePayload);
 
       console.log("Updated messages:", updatedMessages);
@@ -196,13 +214,14 @@ function Messages() {
       }
 
       await getSubData()
-      setNewMessage("");
+      if(status !== 'draft'){
+        setNewMessage("");
+      }
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
   const sendImageMessage = async (url) => {
-    console.log('sendImageMessage')
     setImagePreviewUrl([url, ...imagePreviewUrl])
     if (!userSet) {
       await findUser()
@@ -220,7 +239,7 @@ function Messages() {
         {user ? (
           <div>
             <MessagesComp chat={messages} />
-            <NewMessage setNewMessage={setNewMessage} sendMessage={sendMessage} newMessage={newMessage} onUploadComplete={sendImageMessage} chatId={chatId} />
+            <NewMessage setNewMessage={setNewMessage} sendMessage={sendMessage} newMessage={newMessage} onUploadComplete={sendImageMessage} chatId={chatId} draft={draft} />
             {imagePreviewUrl.map(img => <ImageThumbnail url={img} />)}
           </div>
         ) : (
