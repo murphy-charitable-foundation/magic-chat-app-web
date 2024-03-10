@@ -44,12 +44,10 @@ const Messages = () => {
             const lettersCollectionRef = collection(doc.ref, "letters");
             const lettersQuerySnapshot = await getDocs(
               query(lettersCollectionRef,
-                where("deleted_at", "==", null),
-                where("moderation.approved", "==", true),
-                orderBy("deleted_at"),
-                orderBy("moderation.approved"),
+                where("status", "==", 'sent'),
                 orderBy("created_at", "desc"),
-                limit(1))
+                limit(10)
+              )
             )
             const queryDocumentSnapshots = lettersQuerySnapshot.docs
             const latestMessage = queryDocumentSnapshots[0].data()
