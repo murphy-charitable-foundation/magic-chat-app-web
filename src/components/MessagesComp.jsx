@@ -13,8 +13,8 @@ export default function MessagesComp({ chat = [] }) {
           minHeight="100%"
           overflow="scroll"
         >
-          {chat.map((message) => (
-            <div>
+          {chat.map((message, index) => (
+            <div key={message.collectionId ?? index}>
               <p>{message.letter}</p>
               {message.attachments?.map(att => (
                 <img src={att} />

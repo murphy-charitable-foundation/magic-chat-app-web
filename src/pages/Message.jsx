@@ -63,9 +63,19 @@ function Messages() {
       const documentRe = doc(collection(firestore, collectionName), letterboxId);
       const subcollectionRe = collection(documentRe, "letters");
       console.log("collecting messages")
-      const q = query(subcollectionRe, orderBy("created_at", "desc"), limit(PAGE_SIZE));
+      const q = query(
+        subcollectionRe,
+        where("status", "==", 'sent'),
+        orderBy("created_at", "desc"),
+        limit(PAGE_SIZE)
+        // orderBy("created_at", "desc"),
+        // limit(PAGE_SIZE)
+        // where("deleted_at", "==", null),
+        // startAfter(lastMessageDoc),
+        // startAfter(lastMessageDoc),
+        // limit(PAGE_SIZE)
+      );
       const subcollectionSnapshott = await getDocs(q);
-      console.log(subcollectionSnapshott)
       if (subcollectionSnapshott.empty) {
         setMessageDocRef(documentRe)
         return [];
@@ -80,13 +90,14 @@ function Messages() {
           attachments: letter.attachments,
           letter: letter.letter,
           sent_by: letter.sent_by,
+          status: letter.status,
           created_at: letter.created_at,
-          deleted_at: letter.deleted_at,
-          moderation: letter.moderation,
+          moderation: letter.moderation_comments,
         });
         setLastMessageDoc(subDoc); // Update last document for pagination
       });
       setMessage(msgs)
+      console.log('get data', messages)
       setMessageDocRef(documentRe)
 
       return msgs;
@@ -102,13 +113,13 @@ function Messages() {
 
       const subcollectionRe = collection(messageDocRef, "letters");
       const q = query(subcollectionRe,
-        where("deleted_at", "==", null),
-        where("moderation.approved", "==", true),
-        orderBy("deleted_at"),
-        orderBy("moderation.approved"),
+        where("status", "==", 'sent'),
         orderBy("created_at", "desc"),
         startAfter(lastMessageDoc),
         limit(PAGE_SIZE)
+        // where("deleted_at", "==", null),
+        // orderBy("deleted_at"),
+        // orderBy("moderation.approved"),
       );
       const subcollectionSnapshott = await getDocs(q);
 
