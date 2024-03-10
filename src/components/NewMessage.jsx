@@ -1,12 +1,14 @@
 import { FileUpload } from "@mui/icons-material";
 import { Button, Stack, TextField } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import FileUploader from "./FileUpload";
 
 export default function NewMessage({ newMessage, sendMessage, setNewMessage, onUploadComplete, chatId, draft }) {
-  if(draft && draft.letter){
-    newMessage = draft.letter
-  }
+  useEffect(() => {
+    if (draft && draft.letter) {
+      setNewMessage(draft.letter);
+    }
+  }, [draft]);
   console.log("draft", draft)
   return (
     <Stack direction="row" sx={{ alignItems: "center", marginTop: "12px" }}>

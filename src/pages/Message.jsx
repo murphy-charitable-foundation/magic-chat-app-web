@@ -12,7 +12,8 @@ import {
   addDoc,
   orderBy,
   limit,
-  startAfter
+  startAfter,
+  updateDoc
 } from "firebase/firestore";
 import ImageThumbnail from "../components/ImageThumbnail";
 
@@ -189,6 +190,39 @@ function Messages() {
     }
   };
 
+  const deleteDrafts = async () => {
+    console.log('deleting drafts')
+    try {
+      if (!user) return;
+/*
+  * TO DO
+  * we want 1 draft and we update this with a status of 'draft'
+  * when we hit send, we update this to be a status of 'pending_review'
+  * no deleting required
+  * we just track this 1 draft until sent as a state
+*/
+      console.log('deleting drafts')
+      const userDocRef = doc(collection(firestore, "users"), user);
+      const subcollectionRe = collection(messageDocRef, "letters");
+      const draftQ = query(
+        subcollectionRe,
+        where("status", "==", "draft"),
+        where("deleted_at", "==", null),
+        where("sent_by", "==", userDocRef)
+      );
+  
+      const draftSnapshott = await getDocs(draftQ);
+    console.log('length', draftSnapshott.length)
+      draftSnapshott.forEach(async (subDoc) => {
+        await updateDoc(doc(subcollectionRe, subDoc.id), { deleted_at: new Date() });
+      });
+  
+      console.log("Drafts with user ID", user, "deleted.");
+    } catch (error) {
+      console.error("Error deleting drafts:", error);
+    }
+  };
+
   const sendMessage = async (e, status='pending_review') => {
     console.log(status)
     e.preventDefault();
@@ -212,7 +246,7 @@ function Messages() {
       if (!messageDocRef) {
         throw new Error("Message document reference not found.");
       }
-
+      await deleteDrafts()
       await getSubData()
       if(status !== 'draft'){
         setNewMessage("");
