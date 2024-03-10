@@ -199,7 +199,7 @@ function Messages() {
   * we want 1 draft and we update this with a status of 'draft'
   * when we hit send, we update this to be a status of 'pending_review'
   * no deleting required
-  * we just track this 1 draft until sent as a state
+  * we just track this 1 draft until sent as a state - updating the created_at
 */
       console.log('deleting drafts')
       const userDocRef = doc(collection(firestore, "users"), user);
