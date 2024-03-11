@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
+import { FileUpload } from "@mui/icons-material";
+
 
 const FileUploader = ({ onUploadComplete, chatId }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -34,7 +36,10 @@ const FileUploader = ({ onUploadComplete, chatId }) => {
 
   return (
     <div>
-      <input type="file" onChange={handleChange} disabled={uploadProgress > 0 && uploadProgress < 100} />
+      <input type="file" hidden onChange={handleChange} disabled={uploadProgress > 0 && uploadProgress < 100} id="raised-button-file" />
+      <label htmlFor="raised-button-file">
+        <FileUpload style={{cursor: "pointer"}}/>
+      </label> 
       {uploadProgress > 0 && uploadProgress < 100 && <p>Upload Progress: {uploadProgress}%</p>}
     </div>
   );
