@@ -1,134 +1,299 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import MessagesComp from "../components/MessagesComp";
 import NewMessage from "../components/NewMessage";
-
 import { firestore, auth } from "../firebase";
 import {
   collection,
   query,
   getDocs,
   doc,
-  updateDoc,
-  where
+  where,
+  addDoc,
+  orderBy,
+  limit,
+  startAfter,
+  updateDoc
 } from "firebase/firestore";
+import ImageThumbnail from "../components/ImageThumbnail";
 
-function Message() {
-  const [message, setMessage] = useState([]);
+const PAGE_SIZE = 1;
+
+const parseLetterInfo = (id, letter, pending=false) => ({
+  collectionId: id,
+  attachments: letter.attachments,
+  letter: letter.letter,
+  sent_by: letter.sent_by,
+  status: letter.status,
+  created_at: letter.created_at,
+  moderation: letter.moderation_comments,
+  pending
+})
+
+function Messages() {
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [user, setUser] = useState(null);
-  const [childId, setChildId] = useState(null);
-  const [childRef, setChildRef] = useState(null)
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([])
   const [messageDocRef, setMessageDocRef] = useState(null)
+  const [userSet, setUserSet] = useState(false)
+  const [lastMessageDoc, setLastMessageDoc] = useState(null);
+  const [chatId, setChatId] = useState("");
+  const [draft, setDraft] = useState(null)
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
+    findUser()
+  }, [userSet]);
+
+  const findUser = async () => {
+    const user = await new Promise((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        resolve(user);
+        unsubscribe();
+      }, reject);
     });
-    return unsubscribe;
-  });
 
+    if (!user) {
+      console.log("User not found");
+      return;
+    }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      console.log("new page")
-      try {
-        const collectionRef = collection(firestore, "Child");
-        // get users email from =====>>>>> user.email
-        const q = query(collectionRef, where("email", '==', 'penpalprogram.murphycharity@gmail.com'))
-        const docRef = await getDocs(q)
-        console.log(docRef);
-        if (!docRef.empty) {
-          setChildId(docRef.docs[0].id)
-        }
-      } catch (error) {
-        console.error('Error fetching user:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    console.log("new id", childId)
-    let isMounted = true;
-
-    if (!childId) return
-    const fetchData = async () => {
-      try {
-        const collectionRef = collection(firestore, "Chat");
-        const chatBuddy = window.location.pathname.split("/messages/")[1];
-        const intlBuddyRef = doc(collection(firestore, 'InternationalBuddy'), chatBuddy);
-        const childReference = doc(collection(firestore, 'Child'), childId);
-        setChildRef(childReference);
-
-        const q = query(
-          collectionRef,
-          where("child", '==', childReference),
-          where("international_buddy", '==', intlBuddyRef)
-        );
-
-        const docSnapshot = await getDocs(q);
-
-        if (isMounted) {
-          setMessageDocRef(docSnapshot);
-
-          if (!docSnapshot.empty) {
-            setMessage(docSnapshot.docs[0].data().Messages);
-          }
-        }
-      } catch (e) {
-        console.error('Error fetching chat:', e);
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [childId]);
-
-const sendMessage = async (e) => {
-  e.preventDefault();
-
-  if (!newMessage.trim()) return;
-
-  const newMessagePayload = {
-    deleted_at: null,
-    content: newMessage.trim(),
-    moderated_at: null,
-    content_type: "text",
-    sender: childRef,
+    const userDocRef = doc(firestore, "users", user.uid);
+    setUser(userDocRef)
+    setUserSet(true);
   };
 
-  const updatedMessages = [...message, newMessagePayload];
+  const collectionName = "letterbox";
+  const splitUrl = window.location.href.split("/")
+  const letterboxId = splitUrl[splitUrl.length - 1]
 
-  await updateDoc(messageDocRef.docs[0].ref, { Messages: updatedMessages });
+  useEffect(() => {
+    if (letterboxId) {
+      setChatId(letterboxId)
+    }
+    getSubData()
+  }, [userSet]);
 
-  setMessage(updatedMessages);
+  const getSubData = async () => {
+    if (!user) {
+      await findUser()
+    }
+    try {
+      const documentRe = doc(collection(firestore, collectionName), letterboxId);
+      const subcollectionRe = collection(documentRe, "letters");
+      const q = query(
+        subcollectionRe,
+        where("status", "==", 'sent'),
+        where("deleted_at", '==', null),
+        orderBy("created_at", "desc"),
+        limit(PAGE_SIZE)
+      );
+      const subcollectionSnapshott = await getDocs(q);
+      if (subcollectionSnapshott.empty) {
+        setMessageDocRef(documentRe)
+        return [];
+      }
 
-  setNewMessage("");
-};
-return (
-  <Box>
-    <Stack direction="row" sx={{ alignItems: "center" }}>
-    </Stack>
-    <Typography variant="paragragh" paddingX={2} marginX={2}>
-      <hr />
-    </Typography>
-    <div>
-      {user ? (
-        <div>
-          <MessagesComp chat={message} />
-          <NewMessage setNewMessage={setNewMessage} sendMessage={sendMessage} newMessage={newMessage} />
-        </div>
-      ) : (
-        <div>not logged in</div>
-      )}
-    </div>
-  </Box>
-);
+      const msgs = [];
+      subcollectionSnapshott.forEach((subDoc) => {
+        const letter = subDoc.data();
+        msgs.push({
+          collectionId: subDoc.id,
+          attachments: letter.attachments,
+          letter: letter.letter,
+          sent_by: letter.sent_by,
+          status: letter.status,
+          created_at: letter.created_at,
+          moderation: letter.moderation_comments,
+        });
+        console.log('letter', letter)
+        setLastMessageDoc(subDoc);
+      });
+      if (user) {
+        console.log('user found in get sub data')
+        const pendingQ = query(
+          subcollectionRe,
+          where("status", "==", 'pending_review'),
+          where("deleted_at", '==', null),
+          orderBy("created_at", "desc"),
+          where("sent_by", "==", user),
+          limit(PAGE_SIZE)
+        );
+        const pendingSubcollectionSnapshott = await getDocs(pendingQ);
+        if (!pendingSubcollectionSnapshott.empty) {
+          pendingSubcollectionSnapshott.forEach((subDoc) => {
+            const letter = subDoc.data();
+            msgs.push({
+              collectionId: subDoc.id,
+              attachments: letter.attachments,
+              letter: letter.letter,
+              sent_by: letter.sent_by,
+              status: letter.status,
+              created_at: letter.created_at,
+              moderation: letter.moderation_comments,
+              pending: true
+            });
+          })
+        }
+      }
+      setMessages(msgs)
+      setMessageDocRef(documentRe)
+
+      const draftQuery = query(
+        subcollectionRe,
+        where("status", "==", "draft"),
+        where("deleted_at", "==", null),
+        where("sent_by", "==", user),
+        orderBy("created_at", "desc"),
+        limit(1)
+      );
+
+      const draftSnapshot = await getDocs(draftQuery);
+      if (!draftSnapshot.empty) {
+        const draftData = draftSnapshot.docs[0].data();
+        setDraft({
+          id: draftSnapshot.docs[0].id,
+          attachments: draftData.attachments,
+          letter: draftData.letter
+        });
+      } else {
+        setDraft(null);
+      }
+
+      return msgs;
+    } catch (error) {
+      console.error("Error fetching subcollection data:", error);
+      return [];
+    }
+  };
+
+  const fetchNextMessage = async () => {
+    try {
+      if (!lastMessageDoc) return;
+
+      const subcollectionRe = collection(messageDocRef, "letters");
+      const q = query(subcollectionRe,
+        where("status", "==", 'sent'),
+        orderBy("created_at", "desc"),
+        where("deleted_at", '==', null),
+        where("sent_by", "==", user),
+        startAfter(lastMessageDoc),
+        limit(PAGE_SIZE)
+      );
+      const subcollectionSnapshott = await getDocs(q);
+
+      if (subcollectionSnapshott.empty) {
+        console.log("No more messages available.");
+        return;
+      }
+
+      const newMessage = subcollectionSnapshott.docs[0].data();
+      setMessages(prevMessages => [...prevMessages, newMessage]);
+      setLastMessageDoc(subcollectionSnapshott.docs[0]); // Update last document for next pagination
+    } catch (e) {
+      console.error("Error fetching next message:", e);
+    }
+  };
+
+  const sendMessage = async (e, status = 'pending_review') => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+    if (!user) return;
+
+    try {
+      const documentRe = doc(collection(firestore, collectionName), letterboxId);
+      const subcollectionRe = collection(documentRe, "letters");
+      const q = query(
+        subcollectionRe,
+        where("status", "==", 'sent'),
+        where("deleted_at", '==', null),
+        orderBy("created_at", "desc"),
+        limit(PAGE_SIZE)
+      );
+      const subcollectionSnapshott = await getDocs(q);
+      if (subcollectionSnapshott.empty) {
+        setMessageDocRef(documentRe)
+        return [];
+      }
+
+      const msgs = [];
+      subcollectionSnapshott.forEach((subDoc) => {
+        const letter = subDoc.data();
+        msgs.push(parseLetterInfo(subDoc.id, letter))
+        setLastMessageDoc(subDoc);
+      });
+      if (user) {
+        console.log('user found in get sub data')
+        const pendingQ = query(
+          subcollectionRe,
+          where("status", "==", 'pending_review'),
+          where("deleted_at", '==', null),
+          orderBy("created_at", "desc"),
+          where("sent_by", "==", user),
+          limit(PAGE_SIZE)
+        );
+        const pendingSubcollectionSnapshott = await getDocs(pendingQ);
+        if (!pendingSubcollectionSnapshott.empty) {
+          pendingSubcollectionSnapshott.forEach((subDoc) => {
+            const letter = subDoc.data();
+            msgs.push(parseLetterInfo(subDoc.id, letter, true))
+          })
+        }
+      }
+      setMessages(msgs)
+      if (draft) {
+        await updateDoc(doc(collection(messageDocRef, "letters"), draft.id), {
+          letter: newMessage,
+          status
+        });
+      } else {
+        await addDoc(collection(messageDocRef, "letters"), {
+          deleted_at: null,
+          letter: newMessage,
+          created_at: new Date(),
+          status,
+          sent_by: user,
+          attachments: imagePreviewUrl
+        });
+      }
+
+      setNewMessage("");
+      setDraft(null);
+      setImagePreviewUrl([]);
+
+      getSubData();
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  const sendImageMessage = async (url) => {
+    setImagePreviewUrl([url, ...imagePreviewUrl])
+    if (!userSet) {
+      await findUser()
+    }
+  }
+  return (
+    <Box>
+      <Stack direction="row" sx={{ alignItems: "center" }}>
+        <Button onClick={fetchNextMessage}>Fetch Next Message</Button>
+      </Stack>
+      <Typography variant="paragragh" paddingX={2} marginX={2}>
+        <hr />
+      </Typography>
+      <div>
+        {user ? (
+          <div>
+            <MessagesComp chat={messages} />
+            <NewMessage setNewMessage={setNewMessage} sendMessage={sendMessage} newMessage={newMessage} onUploadComplete={sendImageMessage} chatId={chatId} draft={draft} />
+            {imagePreviewUrl.map(img => <ImageThumbnail url={img} />)}
+          </div>
+        ) : (
+          <div>not logged in</div>
+        )}
+      </div>
+    </Box>
+  );
 }
 
-export default Message;
+export default Messages;

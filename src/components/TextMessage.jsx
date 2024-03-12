@@ -29,13 +29,13 @@ const styling = {
     }
 }
 
-export default function MessageComp({ messageData, key }) {
+export default function TextMessage({ messageData, key }) {
   // use auth to determine if user is a child or international buddy
   let userType = "default";
-  if(messageData.sender && messageData.sender.path){
-    userType = messageData.sender.path.includes("Child") ? "sender" : "receiver"
+  const userUID = auth.currentUser.uid
+  if(messageData.sent_by){
+    userType = messageData.sent_by.id === userUID ? "sender" : "receiver"
   }
-  console.log(messageData)
   const boxStyling = styling[userType]
   if (messageData.content) {
     return (

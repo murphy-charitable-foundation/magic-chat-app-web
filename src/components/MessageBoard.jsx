@@ -1,6 +1,6 @@
 import { Stack, Box, Link } from "@mui/material";
 
-export default function MessageBoard({ messages }) {
+export default function MessageBoard({ messages = [] }) {
   return (
     <Stack
       direction="column"
@@ -8,17 +8,16 @@ export default function MessageBoard({ messages }) {
       alignItems="stretch"
       spacing={2}
     >
-      {messages?.map((chat, i) => (
+      {messages.length && messages.map((chat, i) => (
         <Box key={i} sx={{ background: "#F5F5F5", padding: "8px 16px" }}>
           <Link
-            href={`/messages/${chat.name.path.split("/")[1]}`}
+            href={`/messages/${chat.letterboxId}`}
             sx={{ textDecoration: "none" }}
           >
-            Chat with: {chat.name.path}
+            Chat with: {chat.receiver}
             <br />
-            Last Message: {chat.lastMessage.content}
+            <p>{chat.letter}</p>
             <br />
-            Sent at: {chat.lastMessage.created_at}
           </Link>
         </Box>
       ))}
