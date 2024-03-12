@@ -15,7 +15,7 @@ const FileUploader = ({ onUploadComplete, chatId }) => {
   const handleUpload = async (file) => {
     if (file) {
       console.log('uploading')
-      const storageRef = ref(storage, `uploads/letterbox/${chatId}/${file.name}`);
+      const storageRef = ref(storage, `attachments/${chatId}/${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
       uploadTask.on('state_changed',
