@@ -230,7 +230,6 @@ function Messages() {
           where("deleted_at", '==', null),
           orderBy("created_at", "desc"),
           where("sent_by", "==", user),
-          limit(PAGE_SIZE)
         );
         const pendingSubcollectionSnapshott = await getDocs(pendingQ);
         if (!pendingSubcollectionSnapshott.empty) {
