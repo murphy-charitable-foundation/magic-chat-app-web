@@ -45,13 +45,13 @@ export default function AccountMenu() {
         <Typography sx={{ minWidth: 100 }}>
           {/* <MailIcon color="action" /> */}
           <Link to="/messages">
-            <Badge
+            {/* <Badge
               badgeContent={4}
               color="info"
               sx={{ backgroundColor: yellow }}
-            >
+            > */}
               Messages
-            </Badge>
+            {/* </Badge> */}
           </Link>
         </Typography>
         <Typography sx={{ minWidth: 100 }}>
